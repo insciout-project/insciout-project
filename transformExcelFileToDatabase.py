@@ -3,22 +3,27 @@ import glob, sys
 pd.set_option('display.max_rows', 20)
 pd.set_option('precision', 5)
 
-# sheet0 = pd.ExcelFile("./datatest/03-15-013.xls")
+# note that we could directly import the column from an excel file
+# but it seems that LibreOffice makes xls files incompatible with pandas.
+# column_file = pd.ExcelFile("./Column Names.xls")
+# df_col = column_file.parse(0, header=None)
+df_col = pd.read_csv("./Column Names.csv", header=None)
 
-metadata_columns = \
-    ['PR Title', 'Original Title', 'Discipline', 'SubDiscipline 1', 'SubDiscipline 2', 'Notes', 'Coder', 'Reference', 'Sample']
+metadata_columns = df_col.iloc[0:9, 2].tolist()
+# > should give something like:
+# > ['PR Title', 'Original Title', 'Discipline', 'SubDiscipline 1', 'SubDiscipline 2', 'Notes', 'Coder', 'Reference', 'Sample']
 rearranged_columns = metadata_columns[2:] + metadata_columns[:2]
 metadata_table = pd.DataFrame(columns = metadata_columns)
 
-# could put that in a file.
-data_columns = \
-    ['Source', 'isFilled', 'Date', 'Author', 'Author Title', 'ELNU', 'PDO', 'Jointed Release', 'Embargo SD',
-     'Embargo Time', 'Embargo Duration', 'MC IVs', 'MC DVs', 'JAPRVs Coherence', 'Causation TPS', 'Causation TPC',
-     'Causation MPS', 'Causation MPC', 'TMVs Coherence', 'Sample', 'MC Target', 'Sample Code', 'Design', 'isInfoDesign',
-     'isDesignStated', 'Causation Mention', 'Causation Warning', 'isContextualized', 'isCritical', 'RTC Design',
-     'RTC DesignWords', 'RTC DesignQuote', 'Advice', 'Advice Code', 'isIntitution', 'Institution WordPos', 'Word Count',
-     'PR ExpCond', 'PR Synonym', 'PR SynWords', 'PR CPCT', 'PR CPCTWords', 'PR CPCM1', 'PR CPCM1Words',
-     'PR CPCM2', 'PR CPCM2Words', 'PR Design', 'PR DesignQuote', 'PR DesignWords']
+data_columns = df_col.iloc[9:, 2].tolist()
+# > looks like that:
+# ['Source', 'isFilled', 'Date',  'Author',  'Author_Title',  'ELNU',  'PODO',  'JointPR',  'Embargo_SD',
+#  'Embargo_Time',  'Embargo_Duration',  'IV',  'DV',  'IVDV_Same',  'Title_Rship',  'Title_Code',  'MS_Rship',
+#  'MS_Code',  'TMS_IVDV_Same',  'Sample_Actual',  'Sample_Conc',  'Sample_Code',  'Design_Actual',  'SDI_filled',
+#  'SDI_Design',  'SDI_Cause',  'SDI_Cause_Why',  'SDI_Context',  'SDI_Eval',  'SDI_Statement', 'SDI_Statement_WordsTM',
+#  'SDI_Statement_Quote',  'Advice',  'Advice_Code', 'Institution_Mention',  'Institution_WordsTM',  'Body_WordCount',
+#  'RCT_Condition', 'RCT_Synonym', 'RCT_Synonym_WordsTM',  'RCT_Title',  'RCT_Title_WordsTM',  'RCT_MS1',
+#  'RCT_MS1_WordsTM',  'RCT_MS2',  'RCT_MS2_WordsTM',  'RCT_SDS',  'RCT_SDS_Quote',  'RCT_SDS_WordsTM']
 big_data_columns = metadata_columns[2:] + data_columns
 big_data_table = pd.DataFrame(columns = big_data_columns)
 
