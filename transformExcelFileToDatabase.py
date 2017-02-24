@@ -17,7 +17,7 @@ metadata_table = pd.DataFrame(columns = metadata_columns)
 
 data_columns = df_col.iloc[9:, 2].tolist()
 # > looks like that:
-# ['Source', 'isFilled', 'Date',  'Author',  'Author_Title',  'ELNU',  'PODO',  'JointPR',  'Embargo_SD',
+# ['Source_Category', 'Source', 'isFilled', 'Date',  'Author',  'Author_Title',  'ELNU',  'PODO',  'JointPR',  'Embargo_SD',
 #  'Embargo_Time',  'Embargo_Duration',  'IV',  'DV',  'IVDV_Same',  'Title_Rship',  'Title_Code',  'MS_Rship',
 #  'MS_Code',  'TMS_IVDV_Same',  'Sample_Actual',  'Sample_Conc',  'Sample_Code',  'Design_Actual',  'SDI_filled',
 #  'SDI_Design',  'SDI_Cause',  'SDI_Cause_Why',  'SDI_Context',  'SDI_Eval',  'SDI_Statement', 'SDI_Statement_WordsTM',
@@ -27,8 +27,8 @@ data_columns = df_col.iloc[9:, 2].tolist()
 big_data_columns = metadata_columns[2:] + data_columns
 big_data_table = pd.DataFrame(columns = big_data_columns)
 
-folder_name = 'datatest'
-excel_files = glob.glob("./" + folder_name + "/*.xls")
+folder_name = 'test'
+excel_files = glob.glob("./rawdata/" + folder_name + "/*.xls")
 for i, filepath in enumerate(excel_files):
     sheet = pd.ExcelFile(filepath)
     df = sheet.parse(0, header=None)
@@ -36,8 +36,11 @@ for i, filepath in enumerate(excel_files):
     metadata_table.loc[i, :-1] = metadata.iloc[:,1].values
     metadata_table.loc[i, 'Sample'] = folder_name
 
-    data_table = df.iloc[6:55, 2: 48]
+    data_table = df.iloc[6:55, 3: 48]
     data_table = data_table.transpose()
+    data_table.insert(0, data_columns[0], 'News') # insert the column Source_Category
+    data_table[data_columns[0]].iloc[0:2] = 'PR'
+    data_table[data_columns[0]].iloc[2:4] = 'JA' # those rows are still here (as we only filter after)
     data_table.columns = data_columns # mandatory to make append
     data_table = data_table[1:]
     data_table = data_table[data_table.isFilled == 1]
@@ -55,8 +58,8 @@ for i, filepath in enumerate(excel_files):
 print "metadata table"
 metadata_table = metadata_table[rearranged_columns]
 print metadata_table
-metadata_table.to_csv("test_metatable.csv", encoding='utf-8')
+metadata_table.to_csv("./database/test_metatable.csv", encoding='utf-8')
 print "big data table"
 print big_data_table
-big_data_table.to_csv("test_bigtable.csv", encoding='utf-8')
+big_data_table.to_csv("./database/test_bigtable.csv", encoding='utf-8')
 

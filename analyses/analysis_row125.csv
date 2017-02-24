@@ -1,0 +1,34 @@
+,Sample,Reference,News_Source,News_Advice_Code,PR_Advice_Code,PR_Exageration,Design_Actual,News_Exageration
+0,test,03-15-024,BBC News,0,0,0,1.0,0
+1,test,03-15-024,mirror.co.uk,0,0,0,1.0,0
+2,test,03-15-024,Guardian.co.uk,0,0,0,1.0,0
+3,test,03-15-024,telegraph.co.uk,3,0,0,1.0,1
+4,test,03-15-024,Independent.co.uk,0,0,0,1.0,0
+5,test,29-14-020,Times,0,0,0,9.0,0
+6,test,29-14-020,BBC News,0,0,0,9.0,0
+7,test,29-14-020,telegraph.co.uk,0,0,0,9.0,0
+8,test,29-14-016,Daily Mail,3,0,0,1.0,1
+9,test,29-14-016,Sun,3,0,0,1.0,1
+10,test,29-14-016,Mirror,0,0,0,1.0,0
+11,test,29-14-016,Express,0,0,0,1.0,0
+12,test,29-14-016,Times,2,0,0,1.0,1
+13,test,29-14-016,Guardian,0,0,0,1.0,0
+14,test,29-14-016,Telegraph,0,0,0,1.0,0
+15,test,29-14-016,BBC News,0,0,0,1.0,0
+16,test,29-14-016,mirror.co.uk,0,0,0,1.0,0
+17,test,29-14-016,Mail Online,3,0,0,1.0,1
+18,test,29-14-016,express.co.uk,0,0,0,1.0,0
+19,test,29-14-016,Guardian.co.uk,3,0,0,1.0,1
+20,test,29-14-016,telegraph.co.uk,0,0,0,1.0,0
+21,test,29-14-016,Independent.co.uk,3,0,0,1.0,1
+22,test,03-15-013,Times,0,0,0,8.0,0
+23,test,03-15-013,Scotsman,0,0,0,8.0,0
+24,test,03-15-013,mirror.co.uk,0,0,0,8.0,0
+25,test,03-15-013,Mail Online,3,0,0,8.0,1
+26,test,03-15-013,express.co.uk,3,0,0,8.0,1
+27,test,03-15-013,metro.co.uk,0,0,0,8.0,0
+28,test,03-15-013,telegraph.co.uk,0,0,0,8.0,0
+29,test,03-15-013,Independent.co.uk,3,0,0,8.0,1
+30,test,03-15-038,Guardian.co.uk,0,0,0,8.0,0
+31,test,03-15-038,Independent.co.uk,0,0,0,8.0,0
+32,test,03-15-043,BBC News,2,2,Doctors need to be aware that the new NICE criteria will miss high­risk women,1.0,0
