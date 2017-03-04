@@ -1,0 +1,371 @@
+---
+title: "InSciOut analyses"
+author: "Geoffrey Mégardon"
+date: "3 March 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Useful links to use Rmarkdown:
+- [Markdown Basics](http://rmarkdown.rstudio.com/lesson-8.html)
+- [Display tables](http://rmarkdown.rstudio.com/lesson-7.html)
+
+Note that I used RMarkdown for making the tutorial, but you can just use the R code in a Rscript file when making your own analyses.
+Rmardown is useful to make pretty HTML, Word document, PDF reports.
+
+## Importing the data and useful libraries
+Before to start any analyses, we need to import the data and the libraries that we want to use. Note that you need to install the libraries from ```Tools -> Install Packages``` before to be able to import them in code.
+In R, it is really rare to use the 'base' functions (i.e. out-of-the-box functions) for data manipulation. The libraries ```dplyr``` and ```data.table``` got the reputations to be much more powerful and easy to use than the 'base' functions.
+
+```{r results='hide', message=FALSE, warning=FALSE} 
+library(dplyr)
+library(data.table)
+library(knitr) # just to display pretty tables in Rmarkdown
+df <- read.csv("../database/test_bigtable.csv") 
+
+```
+
+Note that Rstudio is autocompleting the path if you use ```TAB```.
+
+Let us display the first line of the big table.
+```{r } 
+kable(head(df, 1))
+```
+
+
+Note that usually (outside Rmarkdown), you can just write:
+```{r eval=FALSE}
+head(df, 1)
+```
+
+
+> **TIP: ** Alternatively to have a quick look to any tables, go in the tab `Environment` and double-click on the table/variable's name you want to have a look at.
+
+
+
+## Analysis 100
+
+### What we want to do
+
+We use the analysis explained in row 100 in ```Data Analysis.xls```.
+We want to obtain a table that contains the columns:
+
+| Sample^1^ | Institution^2^ | Reference^3^ | JA_Design^4^ | JA_Actual_Sample^5^ | JA_Sample^6^ | PR_Sample^7^ | PR_Exageration^8^ | News_Uptake^9^ | Total_News^10^
+|------:|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+
+We want one row per PR.
+
+1. Sample:
+: take column `Sample` when (Source == "PR")
+2. Institution:
+: take column `Institution` when (Source == "PR")
+3. Reference (PR number):
+: take column `Reference` when (Source == "PR")
+4. JA_Design:
+:     take column `Design_Actual` when (Source == "Journal Article - Body")
+5. JA_Actual_Sample:
+:     take column `Sample_Actual` when (Source == "Journal Article - Body")
+
+> **!WARNING!** note that in the document you speak about the JA - Body but   you cite cell E40, which correspond to PR
+
+6. JA_Sample
+:      take minimum of `Sample_Code` between Source == "Journal Article - Body" and Source == "Journal Article - Title and Abstract". Or, when grouping by JA and Reference, we keep the minimum.
+
+7. PR_Sample
+:      take column `Sample_Code` when (Source_Category == "PR")
+
+> **!WARNING!** you refer to G29 in the spreadsheet, but I think that you meant E28
+
+8. PR_Exageration
+: Operation on **this** table:
+      + **IF PR_Sample is 4,** 
+      the exaggeration/understated column should read **-99**
+      + **IF PR_Sample is 1 OR 2 AND JA_Sample is 1;** 
+      the exaggeration/understated column should read **0** (i.e. correct)
+      + **IF PR_Sample is 1 OR 2 AND JA_Sample is 3;** 
+      the exaggeration/understated column should read **1** (i.e. exaggerated)
+      + **IF PR_Sample is 3 AND JA_Sample is 3;** 
+      the exaggeration/understated column should read **0** (i.e. correct)
+      + **IF PR_Sample is 3 AND JA_Sample is 1;** 
+      the exaggeration/understated column should read **-1** (i.e. understated)
+
+> **!WARNING!** wasn't there an easier way to encode your data? that seems very complicated. Why should `PR_Sample > JA_Sample` not work here?
+
+9. News_Uptake
+:      if there any news articles attached to the PR reference `Reference`
+
+10. Total_News
+:     if yes, how many news articles for each PR
+
+### Get the Table
+Note that the process in Analysis 125 is explained in much more details.
+Here that is the table `PR_table`that will be used as reference because the result (target) table should have one row per PR.
+Note that we don't need anything from the `news_table` this time, except their reference number.
+
+```{r }
+
+news_table = df[df$Source_Category == 'News', c('Reference'), drop=FALSE]
+JA_table = df[df$Source_Category == 'JA', c('Reference', 'Source', 'Design_Actual', 'Sample_Actual', 'Sample_Code')]
+PR_table = df[df$Source_Category == 'PR', c('Sample', 'Reference', 'Sample_Code')]
+
+```
+
+Note the `drop=FALSE`, this prevents R to transform our one-column dataframe into a vector (which would be annoying, cause it would drop the column name).
+We will use the following reference as a example for the minimum function:
+```{r}
+kable(JA_table[JA_table$Reference == '03-15-048',])
+
+```
+
+We group the `JA_table` by `Reference`, and take the minimum of the column `Sample_Code` for each reference number. Then, we write the result directly in the `Sample_Code`.
+
+```{r}
+### Note that %>% is the syntax that dplyr uses to pipe/chain operations: 
+JA_table <- JA_table %>% 
+          group_by(Reference) %>%
+          mutate(Sample_Code = min(Sample_Code)) # we override the column Sample_Code with its minimum
+
+kable(JA_table[JA_table$Reference == '03-15-048',])
+
+```
+
+It works!
+So now we need to remove the `JA - Title and Abstract` rows.
+
+``` {r }
+# with dplyr's syntax:
+JA_table <- JA_table %>%
+            filter(Source == 'Journal Article - Body')
+
+# with R base's syntax
+# JA_table = df[df$Source == 'Journal Article - Body',]
+
+kable(JA_table[JA_table$Reference == '03-15-048',])
+
+```
+
+
+Let us merge the tables. Using the functions from the `data.table` library:
+``` {r }
+### Create a Table that Crosses Information between JA, PR and News tables ----
+# merge the PR Table to the News table
+setnames(JA_table, 
+         old = c('Sample_Code'), 
+         new = c('JA_Sample_Code'))
+setnames(PR_table, 
+         old = c('Sample_Code'), 
+         new = c('PR_Sample_Code'))
+
+```
+```{r}
+d100 <- merge(x = PR_table, y = JA_table, by='Reference')
+d100 <- select(d100, -Source) # remove the column 'Source'
+# note that you could also write:
+# d100 <- d100 %>% select(-Source)
+kable(d100[1:5,])
+```
+
+Make columns `PR_Exageration`according to rules.
+As those rules are long to write, we use the library `data.table` to shorten the code (and it will also speed up the computation).
+```{r}
+setDT(d100) # we make it a Data.Table, allows to go faster and write less
+
+d100 <- 
+  d100[(PR_Sample_Code %in% c(1,2)) & (JA_Sample_Code == 1), PR_Exageration:= 0 ]
+d100 <-
+  d100[(PR_Sample_Code %in% c(1,2)) & (JA_Sample_Code == 3), PR_Exageration:= 1 ]
+d100 <-
+  d100[(PR_Sample_Code == 3) & (JA_Sample_Code == 3), PR_Exageration:= 0 ]
+d100 <-
+  d100[(PR_Sample_Code == 3) & (JA_Sample_Code == 1), PR_Exageration:= -1 ]
+d100 <-
+  d100[(PR_Sample_Code == 4), PR_Exageration:= -99 ]
+
+# use
+# setDF(d100) # to come back to a Data.Frame (if needed)
+
+# without the setDT(d100), you would need to write:
+# d100$PR_Exageration[(d100$PR_Sample_Code %in% c(1,2)) & (d100$JA_Sample_Code == 1) ] = 0
+
+# display (we need to add with=FALSE because we used a data.table)
+kable(head(d100 %>% select(PR_Sample_Code, JA_Sample_Code, PR_Exageration), 10))
+```
+
+Finally we are adding the columns with the count of news and merge everything:
+```{r}
+
+news_table <- news_table %>% 
+              group_by(Reference) %>%
+              mutate(News_Uptake = 'yes', Total_News= n()) %>%
+              filter(row_number()==1)
+```
+In the previous chunk of code, we grouped the `news_table` by Reference, and then:
+- we put 'yes' in the new columns `News_Uptake` for all of these references.
+- we counted the number of rows in each group and put the results in the new column `Total_News`. The `n()` is a dplyr function that returns the number of row of the current table/group.
+- once done, we keep only the first row of each group with code `filter(row_number()==1)`. 
+
+To squeeze `news_table` so that we keep only one row per reference is necessary for the following merge operation. Otherwise the merge operation will return several rows for all the references present in `news_table`.
+
+``` {r}
+
+d100 <- left_join(d100, news_table, by='Reference')
+d100$News_Uptake[is.na(d100$News_Uptake)] <- 'no' # note that NA can only be detected with is.na()
+d100$Total_News[is.na(d100$Total_News)] <- 0
+kable(head(d100, 10))
+```
+
+Note that, by doing `all.x = TRUE`, I only kept references that have a PR/JA (the one in `d100`), so if there are news that have no related JA/PR, they won't appear.
+
+
+## Analysis 125
+
+### What we want to do
+
+We use the analysis explained in row 125 in ```Data Analysis.xls```.
+We want to obtain a table that contains the columns:
+
+| Sample^1^ | Institution^2^ | Reference^3^ | JA_Design^4^ | PR_Advise^5^ | News_Source^6^ | News_Advices^7^ | News_Exageration^8^ | PR_Exageration^9^ | 
+|------:|-----|-----|-----|-----|-----|-----|-----|-----|
+
+1. Sample:
+: take column `Sample` when (Source == "News")
+2. Institution:
+: take column `Institution` when (Source == "News")
+3. Reference (PR number):
+: take column `Reference` when (Source == "News")
+4. JA_Design:
+:     take column `Design_Actual` when (Source == "Journal Article - Body")
+5. PR_Advise:
+:     take column `Advice_Code` when (Source == "Final Press Release")
+
+> **!WARNING!** note that in the document you speak about the JA - Body but   you cite cell E40, which correspond to PR
+
+6. News_Source
+:      take column `Source` when (Source_Category == "News")
+7. News_Advise
+:      take column `Advice_Code` when (Source_Category == "News")
+8. News_Exageration
+: Operation on **this** table:
+      + 1 if `News_Advice` > `PR_Advice`
+      + 0 if `News_Advice` = `PR_Advice`
+      + -1 if `News_Advice` < `PR_Advice`
+9. PR_Exageration
+:      to take from Analysis 100 (a100)
+
+> **!WARNING!** note that this last column needs input from Analysis 100
+
+### Split the Big Table in Three Tables (PR, JA and News)
+
+Before to start, it is important to note that the resulting table as one line per news paper!
+Let us split the big table into three tables: the PR table, the JA table and the news table. This will allow us to cross the information between PR, JA and News. Also, let us select the columns that we actually need from each Sources (e.g. we only need the column `Design_Actual` from JA).
+```{r }
+
+news_table = df[df$Source_Category == 'News', c('Sample', 'Reference', 'Source', 'Advice_Code')]
+JA_table = df[df$Source == 'Journal Article - Body', c('Reference', 'Design_Actual')]
+PR_table = df[df$Source == 'Final Press Release', c('Reference', 'Advice_Code', 'Advice')]
+
+# Display the results:
+kable(head(news_table, 5))
+kable(head(PR_table, 5))
+kable(head(JA_table, 5))
+```
+
+The result table that we are looking to generate will have one line per news paper, so we can use `news_table` as a base for the result table, to which we will add new columns.
+
+### Create a Table that Crosses Information between JA, PR and News tables
+
+Let us include the PR's `Advice_code` in `news_table`.
+First, we need to change the name of `Advice_Code` in `news_table` for avoiding to override it with the PR's `Advice_Code`. Let's also take the opportunity to rename `Source` to `News_Source` 
+```{r}
+# setnames is a function from dtplyr (or data.table)
+setnames(news_table, 
+         old = c('Advice_Code','Source'), 
+         new = c('News_Advice_Code','News_Source'))
+setnames(PR_table, 
+         old = c('Advice_Code'), 
+         new = c('PR_Advice_Code'))
+
+# display
+kable(head(news_table, 1))
+kable(head(PR_table, 1))
+```
+
+Now, we would like to put the column `PR_Advice_Code` in `news_table`. Unfortunately, for one PR/JA there are several news, so that `PR_table` does not have the same number of rows as `news_table`. Fortunately, R, python and SQL allows us to merge tables that don't have the same number of rows.
+
+We will **merge** `PR_table` and `news_table` based **on** their `Reference` column (also called the **key**, or merged **by**). We will also ask R to use the column `Reference` in `news_table` as a reference, so that it keeps the number of rows present in `news_table`, and repeat the content of `PR_table` to fill the gaps.
+```{r}
+# using the data.table library:
+d125 <- merge(x = news_table, y = PR_table, by='Reference', all.x = TRUE)
+
+# alternative way, using dplyr:
+# d125 <- left_join(news_table, PR_table, by='Reference')
+
+# display the first 10 rows
+kable(head(d125, 10) )
+```
+
+See here that we create a new table `d125`. As `news_table` is given as `x` to the merge function, `all.x = TRUE` tells R to keeps only the `Reference`'s values present in `news_table`. 
+
+> **Note: ** As `x = news_table` is on the left of the function call, SQL and python would called what we did a **left join** operation.  
+
+Let us include the columns from `JA_table` now. Note that we'll do the merge operation on the `d125` so that we keep the results of the previous merge operation.
+
+```{r}
+setnames(JA_table, 
+         old = c('Design_Actual'), 
+         new = c('JA_Design'))
+# note that we do the merge operation on the d125 now:
+d125 <- merge(x = d125, y = JA_table, by='Reference', all.x = TRUE)
+
+
+# display
+kable(head(d125, 10))
+```
+
+### Add New Columns To Our Table based on its Current Columns
+
+Finally, we would like to compute the variable `News_Exageration` that compared the columns `News_Advice_Code` and `PR_Advice_Code` of our table `d125`.
+
+> Note the usage of `ifelse()` is simialr to `numpy.where()` in python.
+Example:
+```{r} 
+ifelse(c(1, -3, -3, 1, -3) > 0, 'yes', 'no')
+```
+
+
+```{r}
+isNewsGreater <- d125$News_Advice_Code > d125$PR_Advice_Code
+d125$News_Exageration = ifelse(isNewsGreater, 1, -1)
+
+isNewsEqual = d125$News_Advice_Code == d125$PR_Advice_Code
+d125[isNewsEqual, 'News_Exageration'] <- 0
+# you could also write it:
+# results_table$News_Exageration[isNewsEqual] <- 0
+
+# display the first 10 rows:
+kable(head(d125, 10))
+```
+
+### Add New Columns based on Older Analysis
+
+```{r}
+
+sub.d100 <- d100 %>%
+            select(Reference, PR_Exageration)
+
+d125 <- left_join(x = d125, y = sub.d100, by='Reference')
+
+# display only the first news of each Reference, so it is easier to check
+kable(d125 %>% group_by(Reference) %>% filter(row_number() == 1)) 
+```
+
+
+### Using dplyr instead of data.table functions
+We used the functions offered by the library `data.table` in our example when we merged two tables. There is other way to do it in R, with the `dplyr` library, it would look like:
+``` {r }
+### 
+
+```
