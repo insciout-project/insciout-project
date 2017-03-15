@@ -1,0 +1,46 @@
+---
+title: "Untitled"
+author: "Geoffrey Mégardon"
+date: "9 March 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## further
+
+```{sql connection=}
+--Insert based on select
+--INSERT INTO [TABLETOINSERT] (ColumnToInsert)
+SELECT 
+    CASE 
+       WHEN ColumnA > 0 THEN ColumnA
+       ELSE ColumnB
+    END AS NewColumn
+--Or create a table the select
+--INTO [NEWTABLENAME]
+FROM [TABLENAME]
+```
+
+Or update:
+
+```{sql connection=}
+UPDATE [TABLENAME]
+SET NewColumn = 
+    CASE 
+       WHEN ColumnA > 0 THEN ColumnA
+       ELSE ColumnB
+END
+
+```
+
+```{sql connection=}
+SELECT 
+(SELECT COUNT(*) FROM table1 b WHERE level = 2 AND b._id <= a._id) AS "index",
+  name
+FROM table1 a
+WHERE level = 2;
+
+```
