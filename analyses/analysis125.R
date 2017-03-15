@@ -1,12 +1,16 @@
 library(dplyr)
 library(data.table)
+library(DBI)
 
 # --- Analysis at row 125 in DataAnalasis.xls ----
 ### Split the Big Table in Three Tables (PR, JA and News) ----
-df <- read.csv("../database/test_bigtable.csv")
-news_table = df[df$Source_Category == 'News', c('Sample', 'Reference', 'Source', 'Advice_Code')]
-JA_table = df[df$Source == 'Journal Article - Body', c('Reference', 'Design_Actual')]
-PR_table = df[df$Source == 'Final Press Release', c('Reference', 'Advice_Code', 'Advice')]
+
+db <- dbConnect(RSQLite::SQLite(), dbname = "../database/InSciOut.db")
+news_table <- dbGetQuery(db, "SELECT Reference, Source, Advice_Code FROM News_table")
+JA_table <- dbGetQuery(db, "SELECT Reference, Design_Actual FROM JABody_table")
+PR_table <- dbGetQuery(db, "SELECT Reference, Advice_Code, Sample_Code FROM PR_table")
+Meta_table <- dbGetQuery(db, "SELECT Reference, Sample FROM Meta_table")
+
 
 ### Create a Table that Crosses Information between JA, PR and News tables ----
 # merge the PR Table to the News table
@@ -14,8 +18,8 @@ setnames(news_table,
          old = c('Advice_Code','Source'), 
          new = c('News_Advice_Code','News_Source'))
 setnames(PR_table, 
-         old = c('Advice_Code','Advice'), 
-         new = c('PR_Advice_Code','PR_Exageration'))
+         old = c('Advice_Code'), 
+         new = c('PR_Advice_Code'))
 
 d125 <- merge(x = news_table, y = PR_table, by='Reference', all.x = TRUE)
 # alternative way, using dplyr:
@@ -30,9 +34,10 @@ isNewsGreater <- d125$News_Advice_Code > d125$PR_Advice_Code
 d125$News_Exageration = ifelse(isNewsGreater, 1, -1)
 
 isNewsEqual = d125$News_Advice_Code == d125$PR_Advice_Code
-results_table$News_Exageration[isNewsEqual] <- 0
+d125$News_Exageration[isNewsEqual] <- 0
 
 ### Add New Columns based on Older Analysis
+d100 <- read.csv("./d100.csv", stringsAsFactors = F)
 sub.d100 <- d100 %>%
   select(Reference, PR_Exageration)
 

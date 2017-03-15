@@ -1,12 +1,13 @@
 library(dplyr)
 library(data.table)
+library(DBI)
 
 ### --- Analysis at row 100 in DataAnalasis.xls ----
-df <- read.csv("../database/test_bigtable.csv")
-# Select relevant data and split them in three tables:
-news_table = df[df$Source_Category == 'News', c('Reference'), drop=FALSE]
-JA_table = df[df$Source_Category == 'JA', c('Reference', 'Source', 'Design_Actual', 'Sample_Actual', 'Sample_Code')]
-PR_table = df[df$Source_Category == 'PR', c('Sample', 'Reference', 'Sample_Code')]
+db <- dbConnect(RSQLite::SQLite(), dbname = "../database/InSciOut.db")
+news_table <- dbGetQuery(db, "SELECT Reference FROM News_table")
+JA_table <- dbGetQuery(db, "SELECT Reference, Source, Design_Actual, Sample_Actual, Sample_Code FROM JA_table")
+PR_table <- dbGetQuery(db, "SELECT Reference, Sample_Code FROM PR_table")
+Meta_table <- dbGetQuery(db, "SELECT Reference, Sample FROM Meta_table")
 
 # Select the minim between Sample_Code from Article's Title and Article's Body
 JA_table <- JA_table %>% # note that both Title and Body rows are in JA_table 
