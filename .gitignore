@@ -1,2 +1,6 @@
 database/SQLiteStudio
 .idea
+analyses/.Rhistory
+analyses/.RData
+analyses/test.Rmd
+analyses/test.html
