@@ -1,13 +1,15 @@
 ---
 title: "InSciOut SQL / SQLite tutorial"
-author: "Geoffrey Mégardon"
+author: "Geoffrey M�f©gardon"
 date: "4 March 2017"
-highlight: pygment
-theme: journal
 output:
+  pdf_document:
+    toc: yes
   html_document:
-    toc: true
-    toc_float: true
+    toc: yes
+    toc_float: yes
+theme: journal
+highlight: pygment
 ---
 
 ```{r setup, include=FALSE}
@@ -400,7 +402,7 @@ We want one row per PR.
 Analysis 100 is a bit more complicated because we need to created:
   
   - a new column `JA_Sample_Code` based on `MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code)` 
-  - a new column `PR_Exageration` based on the previous new column `JA_Sample_Code`
+  - a new column `PR_Exageration` based on the above new column `JA_Sample_Code`
 
 We could keep the same template as above. However, as SQL does not allow to reuse the new column in a new column, so we would need to repeat some of our code (such as the `MIN()` operation):
 

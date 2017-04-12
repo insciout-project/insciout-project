@@ -1,0 +1,319 @@
+---
+title: "Debug_Rachel_code"
+author: "Geoffrey Mégardon"
+date: "6 April 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(knitr)
+library(dplyr)
+```
+
+```{r}
+library(DBI)
+getwd()
+db <- dbConnect(RSQLite::SQLite(), dbname = "../../database/InSciOut.db")
+```
+
+## Bug report
+Rachel:
+
+> I attempted the two causal language tables (rows 73 and 146). I was fine with the first one including the journal article and press release but when I try the one containing the news articles I end up with 299 rows rather than 33. 
+> I've been through the code and the error occurs whenever I pull data from the temporary table into the main table.
+I'm guessing it's a joining issue but I can't figure it out.
+> Code attached (note JAPR_language_73 is a view that I have created to get the data for whether / not the press release was exaggerated)
+
+> I want as many rows as news articles and there are 33 news articles.
+it's somehow duplicating the news articles. Eg. for the first press release there are 8 news articles but it's giving me 8 x Times articles, 8 x independent articles, 8 x mirror articles etc.
+
+Attached: PN_NA_Language.sql
+```{sql connection=db, eval=F}
+
+WITH
+tmpT1 AS
+(
+SELECT Reference,
+    CASE 
+    WHEN News_table.TMS_IVDV_Same = 1  THEN MAX(News_table.Title_Code, News_table.MS_Code)
+    WHEN News_table.TMS_IVDV_Same = 0  THEN News_table.MS_Code
+    END
+    News_CaCode
+    
+    FROM News_table
+    )
+    
+SELECT
+Reference,
+Meta_table.Institution, 
+Meta_table.Sample,
+JABody_table.Design_Actual, 
+JAPR_language_73.JA_CaCode,
+JAPR_language_73.PR_Exag_Adams,
+JAPR_language_73.PR_Exag_BMJ,
+JAPR_language_73.PR_ActExag_Adams,
+News_table.Source as News_Source,
+-- statement of cause from news
+tmpT1.News_CaCode,
+
+-- is the news exaggerated relative to the JA (Adams et al coding)
+
+CASE
+    WHEN JABody_table.Design_Actual IN (0,8)                                         THEN -99
+    WHEN JAPR_language_73.JA_CaCode IN (0,1,-9)   OR tmpT1.News_CaCode IN (0,1,-9)   THEN -99
+    
+    WHEN  JAPR_language_73.JA_CaCode IN (2,3,4)   AND tmpT1.News_CaCode IN (2,3,4)   THEN 0
+    WHEN  JAPR_language_73.JA_CaCode IN (5,6)     AND tmpT1.News_CaCode IN (2,3,4)   THEN -1
+    WHEN  JAPR_language_73.JA_CaCode IN (2,3,4)   AND tmpT1.News_CaCode IN (5,6)     THEN 1
+    WHEN  JAPR_language_73.JA_CaCode IN (5,6)     AND tmpT1.News_CaCode IN (5,6)     THEN 0
+
+    END
+    News_Exag_Adams,
+
+
+-- is the news exaggerated relative to the JA (BMJ coding)
+
+CASE
+    WHEN JABody_table.Design_Actual IN (0,8)                                         THEN -99
+    WHEN JAPR_language_73.JA_CaCode IN (0,1,-9)   OR tmpT1.News_CaCode IN (0,1,-9)   THEN -99
+
+    WHEN  JAPR_language_73.JA_CaCode = tmpT1.News_CaCode                             THEN 0
+    WHEN  JAPR_language_73.JA_CaCode < tmpT1.News_CaCode                             THEN 1
+    WHEN  JAPR_language_73.JA_CaCode > tmpT1.News_CaCode                             THEN -1
+    END      
+    News_Exag_BMJ, -- CHECK THAT THIS IS CORRECT WITH SOL
+    
+
+
+--- is the news exaggerated relative to the study design (Adams et al coding)
+
+CASE
+   WHEN JABody_table.Design_Actual IN (0,8)                                        THEN -99
+   WHEN tmpT1.News_CaCode IN (0,1,-9)                                              THEN -99
+   WHEN JABody_table.Design_Actual IN (1,2,3,5,6) AND tmpT1.News_CaCode IN (2,3,4) THEN 0
+   WHEN JABody_table.Design_Actual IN (4,7,9)     AND tmpT1.News_CaCode IN (2,3,4) THEN -1
+   WHEN JABody_table.Design_Actual IN (1,2,3,5,6) AND tmpT1.News_CaCode IN (5,6)   THEN 1
+   WHEN JABody_table.Design_Actual IN (4,7,9)     AND tmpT1.News_CaCode IN (5,6)   THEN 0
+   END
+   News_ActExag_Adams
+   
+FROM
+News_table
+LEFT JOIN Meta_table USING(Reference)
+LEFT JOIN JABody_table USING(Reference)
+LEFT JOIN JAPR_language_73 USING(Reference)
+LEFT JOIN tmpT1 USING(Reference)
+
+```
+
+
+## Fisrt thought
+
+there might be a duplicate in JABody (note that I don' t have the same database here):
+```{sql connection=db}
+WITH
+T1 AS (
+SELECT Reference, JABody_table.Source
+FROM JABody_table
+)
+
+SELECT Reference, COUNT(*)
+FROM T1
+GROUP BY Reference
+HAVING COUNT(*)>1
+
+```
+
+Such a duplicate can increase the number of duplicates x2 for each JOIN operation:
+```{sql connection=db}
+WITH
+T1 AS (
+SELECT Reference, JABody_table.Source
+FROM JABody_table
+LEFT JOIN JATitle_table USING(Reference)
+LEFT JOIN PR_table USING(Reference)
+)
+
+SELECT Reference, COUNT(*)
+FROM T1
+GROUP BY Reference
+HAVING COUNT(*)>1
+
+```
+
+## Number of News in our Database
+
+```{sql connection=db}
+SELECT
+COUNT()
+
+FROM
+News_table
+
+```
+
+We got 401 News.
+
+## Mock Query
+
+We don' t have access to the view JAPR_language_73 and the error seems to only involve the temporary table.
+
+> I've been through the code and the error occurs whenever I pull data from the temporary table into the main table.
+
+Adapted from PN_NA_Language.sql
+```{sql connection=db}
+
+WITH
+tmpT1 AS
+(
+SELECT Reference,
+    CASE 
+    WHEN News_table.TMS_IVDV_Same = 1  THEN MAX(News_table.Title_Code, News_table.MS_Code)
+    WHEN News_table.TMS_IVDV_Same = 0  THEN News_table.MS_Code
+    END
+    News_CaCode
+    
+    FROM News_table
+    )
+    
+SELECT
+Reference,
+Meta_table.Institution, 
+Meta_table.Sample,
+JABody_table.Design_Actual, 
+News_table.Source as News_Source,
+-- statement of cause from news
+tmpT1.News_CaCode,
+
+-- is the news exaggerated relative to the JA (Adams et al coding)
+
+CASE
+    WHEN JABody_table.Design_Actual IN (0,8) THEN -99
+    END
+    News_Exag_Adams,
+
+
+-- is the news exaggerated relative to the JA (BMJ coding)
+
+CASE
+    WHEN JABody_table.Design_Actual IN (0,8) THEN -99
+    END      
+    News_Exag_BMJ, -- CHECK THAT THIS IS CORRECT WITH SOL
+    
+CASE
+   WHEN JABody_table.Design_Actual IN (0,8)                                        THEN -99
+   WHEN tmpT1.News_CaCode IN (0,1,-9)                                              THEN -99
+   WHEN JABody_table.Design_Actual IN (1,2,3,5,6) AND tmpT1.News_CaCode IN (2,3,4) THEN 0
+   WHEN JABody_table.Design_Actual IN (4,7,9)     AND tmpT1.News_CaCode IN (2,3,4) THEN -1
+   WHEN JABody_table.Design_Actual IN (1,2,3,5,6) AND tmpT1.News_CaCode IN (5,6)   THEN 1
+   WHEN JABody_table.Design_Actual IN (4,7,9)     AND tmpT1.News_CaCode IN (5,6)   THEN 0
+   END
+   News_ActExag_Adams
+   
+FROM
+News_table
+LEFT JOIN Meta_table USING(Reference)
+LEFT JOIN JABody_table USING(Reference)
+LEFT JOIN tmpT1 USING(Reference)
+
+```
+
+
+We get a number of rows > 1000 while there are only 401 News.
+Now that we see that the bug still occurs while removing the view JAPR_language_73, we can actually remove even all the rows and complicated things around and only return the number of rows:
+
+```{sql connection=db}
+
+WITH
+tmpT1 AS
+(
+SELECT Reference
+FROM News_table
+)
+    
+SELECT
+COUNT()
+
+FROM
+News_table
+LEFT JOIN Meta_table USING(Reference)
+LEFT JOIN JABody_table USING(Reference)
+LEFT JOIN tmpT1 USING(Reference)
+
+```
+
+## First Problem, the duplicate References:
+
+As stated by Rachel to remove the Temporary table helps, we obtain 458 rows. But that is not exactly equal to the nb of News.
+You can see how the number increases with the number of JOIN operations.
+
+```{sql connection=db}
+
+SELECT
+COUNT(*)
+
+FROM
+News_table
+LEFT JOIN PR_table USING(Reference)
+LEFT JOIN Meta_table USING(Reference)
+--LEFT JOIN JABody_table USING(Reference)
+
+
+```
+
+This is because there is a duplicate Reference in PR_table (you can try with JABody and JATitle tables as well):
+```{sql connection=db}
+
+SELECT Reference, COUNT(*)
+FROM PR_table
+-- FROM JABody_table
+-- FROM JATitle_table
+GROUP BY Reference
+HAVING COUNT(*)>1
+
+```
+
+## Second Problem, Reference is not a unique ID for News
+
+Ok, so we have 1 duplicate Reference in PR_table.
+But, in News_table, there are even more duplicates of Reference:
+```{sql connection=db}
+
+SELECT Reference, COUNT(*)
+FROM News_table
+GROUP BY Reference
+HAVING COUNT(*)>1
+
+```
+
+Yes, indeed, Reference is a unique ID only for PR, JABody and JATitle tables!
+
+Now, this is not a problem when JOINing News_table with PR_table, JABody_table and JATitle_table because Reference is still unique in those tables.
+
+However when `JOIN`ing tmpT1 and News_table, we need to note that tmpT1 is derivated from News_table: it contains the same rows of Reference.
+When `JOIN`ing them `USING(Reference)`, SQL has no idea on how to relate the rows with each other, because Reference are not unique in any of them!
+
+We need to add another columns to make sure that the key to related the two tables is unique for each row. `USING(Reference, Source)` should do the job:
+
+```{sql connection=db}
+
+WITH
+tmpT1 AS
+(
+SELECT Reference, Source
+FROM News_table
+)
+    
+SELECT
+COUNT()
+
+FROM
+News_table
+--LEFT JOIN Meta_table USING(Reference)
+--LEFT JOIN JABody_table USING(Reference)
+LEFT JOIN tmpT1 USING(Reference, Source);
+
+```
+

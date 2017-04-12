@@ -226,8 +226,9 @@ div.tocify {
 <div id="quick-explanation-about-this-file" class="section level3">
 <h3>Quick explanation about this file</h3>
 <p>To create SQLite database is easy with pandas/python. And to access the database from Rmardown, that I used to write this HTML file, is pretty easy too:</p>
-<pre class="r"><code>library(DBI)
-db &lt;- dbConnect(RSQLite::SQLite(), dbname = &quot;../database/InSciOut.db&quot;)</code></pre>
+<pre class="r"><code>library(DBI)</code></pre>
+<pre><code>## Warning: package 'DBI' was built under R version 3.3.3</code></pre>
+<pre class="r"><code>db &lt;- dbConnect(RSQLite::SQLite(), dbname = &quot;../database/InSciOut.db&quot;)</code></pre>
 <p>We can now use <code>db</code> to connect R to the database (see the Rmd file to see it used). Basically, each cell of code that follows starts with <code>{sql connection=db}</code> to tell R to use <code>db</code> for the SQL query I am writing.</p>
 </div>
 <div id="content-of-the-sql-database" class="section level3">
@@ -1561,7 +1562,7 @@ head(d125, 10)</code></pre>
 <p>Analysis 100 is a bit more complicated because we need to created:</p>
 <ul>
 <li>a new column <code>JA_Sample_Code</code> based on <code>MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code)</code></li>
-<li>a new column <code>PR_Exageration</code> based on the previous new column <code>JA_Sample_Code</code></li>
+<li>a new column <code>PR_Exageration</code> based on the above new column <code>JA_Sample_Code</code></li>
 </ul>
 <p>We could keep the same template as above. However, as SQL does not allow to reuse the new column in a new column, so we would need to repeat some of our code (such as the <code>MIN()</code> operation):</p>
 <pre class="sql"><code>SELECT -- Select the columns you want to have:
@@ -1578,70 +1579,6 @@ head(d125, 10)</code></pre>
 FROM PR_table
 LEFT JOIN JATitle_table USING(Reference)
 LEFT JOIN JABody_table USING(Reference)</code></pre>
-<div class="knitsql-table">
-<table>
-<caption>Displaying records 1 - 10</caption>
-<thead>
-<tr class="header">
-<th align="right">JA_Sample_Code</th>
-<th align="right">PR_Sample_Code</th>
-<th align="right">PR_Exageration</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="right">-9</td>
-<td align="right">1</td>
-<td align="right">NA</td>
-</tr>
-<tr class="odd">
-<td align="right">3</td>
-<td align="right">1</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="right">2</td>
-<td align="right">2</td>
-<td align="right">NA</td>
-</tr>
-</tbody>
-</table>
-</div>
 <p>That <code>SELECT</code> section just looks uggly. Fortunately, with the keyword <code>WITH</code>, SQL can create/query temporary tables, that we will be able to use in the <code>SELECT</code> section.</p>
 </div>
 <div id="use-with-to-store-min-result-in-a-temporary-table-and-avoid-repetitive-code" class="section level3">

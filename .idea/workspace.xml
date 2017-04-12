@@ -2,13 +2,40 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d8a26c31-cb9a-4407-81ce-ebe127ded3cb" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Column Names.xls" afterPath="$PROJECT_DIR$/Column Names.xls" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/database/InSciOut.db" afterPath="$PROJECT_DIR$/database/InSciOut.db" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rawdata/test/03-15-013.xls" afterPath="$PROJECT_DIR$/rawdata/test/03-15-013.xls" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/utils.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/analyses/analysesInSciOut_Rsql.Rmd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/analyses/analysis100.r" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/analyses/analysis125.R" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/analyses/analysis125.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/analyses/d100.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/analyses/d125.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/database/InSciOut.db" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/03-15-013.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/03-15-024.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/03-15-029.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/03-15-032.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/03-15-034.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/03-15-038.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/03-15-041.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/03-15-043.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/03-15-046.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/03-15-048.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/29-14-004.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/29-14-006.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/29-14-009.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/29-14-010.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/29-14-011.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/29-14-015.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/29-14-016.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/29-14-018.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/29-14-019.xls" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rawdata/test/29-14-020.xls" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/transformExcelFileToDatabase.py" afterPath="$PROJECT_DIR$/transformExcelFilesToLargeCSV.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/transformExcelFileToSQL.py" afterPath="$PROJECT_DIR$/transformExcelFilesToSQLiteDatabase.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tutorials/InSciOut_Tutorial_SQL_sqlite.Rmd" afterPath="$PROJECT_DIR$/tutorials/InSciOut_Tutorial_SQL_sqlite.Rmd" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Column Names.csv" afterPath="$PROJECT_DIR$/Column Names.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analyses/notes_SQL.Rmd" afterPath="$PROJECT_DIR$/analyses/notes_SQL.Rmd" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/transformExcelFileToSQL.py" afterPath="$PROJECT_DIR$/transformExcelFileToSQL.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tutorials/InSciOut_Tutorial_R_sqlite.html" afterPath="$PROJECT_DIR$/tutorials/InSciOut_Tutorial_R_sqlite.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tutorials/InSciOut_Tutorial_SQL_sqlite.html" afterPath="$PROJECT_DIR$/tutorials/InSciOut_Tutorial_SQL_sqlite.html" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -23,35 +50,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="transformExcelFileToDatabase.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/transformExcelFileToDatabase.py">
+      <file leaf-file-name="transformExcelFilesToSQLiteDatabase.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/transformExcelFilesToSQLiteDatabase.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1188">
-              <caret line="35" column="26" lean-forward="false" selection-start-line="35" selection-start-column="26" selection-end-line="35" selection-end-column="26" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-                <element signature="e#448#479#0" expanded="false" />
-                <element signature="e#775#795#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="analysis_row125.csv" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/analyses/analysis_row125.csv">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test_analysis.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/analyses/test_analysis.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="704">
-              <caret line="37" column="54" lean-forward="false" selection-start-line="37" selection-start-column="31" selection-end-line="37" selection-end-column="54" />
+            <state relative-caret-position="787">
+              <caret line="48" column="30" lean-forward="false" selection-start-line="48" selection-start-column="30" selection-end-line="48" selection-end-column="30" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -59,62 +62,22 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test_analysis_nocomment.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/analyses/test_analysis_nocomment.py">
+      <file leaf-file-name="decorators.py" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/Anaconda2/Lib/site-packages/pandas/util/decorators.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="704">
-              <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+            <state relative-caret-position="3740">
+              <caret line="90" column="0" lean-forward="false" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="transformExcelFileToSQL.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/transformExcelFileToSQL.py">
+      <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="42" column="50" lean-forward="false" selection-start-line="42" selection-start-column="50" selection-end-line="42" selection-end-column="50" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="analysis100.r" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/analyses/analysis100.r">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="2376">
+              <caret line="54" column="0" lean-forward="false" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="analysis125.R" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/analyses/analysis125.R">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tests.ipynb" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests.ipynb">
-          <provider selected="true" editor-type-id="ipnb-editor">
-            <state>
-              <selected id="2" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test2.ipynb" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test2.ipynb">
-          <provider selected="true" editor-type-id="ipnb-editor">
-            <state>
-              <selected id="4" />
             </state>
           </provider>
         </entry>
@@ -124,8 +87,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="Jupyter Notebook" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -142,14 +105,16 @@
         <option value="$PROJECT_DIR$/test2.ipynb" />
         <option value="$PROJECT_DIR$/analyses/test_analysis_nocomment.py" />
         <option value="$PROJECT_DIR$/transformExcelFileToSQL.py" />
+        <option value="$PROJECT_DIR$/utils.py" />
+        <option value="$PROJECT_DIR$/transformExcelFilesToSQLiteDatabase.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-13" />
-    <option name="y" value="-13" />
-    <option name="width" value="2762" />
-    <option name="height" value="1770" />
+    <option name="x" value="789" />
+    <option name="y" value="-2173" />
+    <option name="width" value="3866" />
+    <option name="height" value="2106" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -166,8 +131,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -196,6 +159,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -211,7 +176,7 @@
       <recent name="C:\Users\geoff\MyDocuments\Bitbucket\InSciOut\analyses" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.transformExcelFileToSQL">
+  <component name="RunManager" selected="Python.transformExcelFilesToSQLiteDatabase">
     <configuration default="false" name="transformExcelFileToSQL" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -224,7 +189,24 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="InSciOut Data Pipeline" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/transformExcelFileToSQL.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\geoff\MyDocuments\Bitbucket\InSciOut\transformExcelFilesToSQLiteDatabase.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="transformExcelFilesToSQLiteDatabase" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="InSciOut Data Pipeline" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/transformExcelFilesToSQLiteDatabase.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -383,18 +365,20 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="InSciOut Data Pipeline" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/transformExcelFileToDatabase.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\geoff\MyDocuments\Bitbucket\InSciOut\transformExcelFilesToLargeCSV.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
-    <list size="2">
+    <list size="3">
       <item index="0" class="java.lang.String" itemvalue="Python.transformExcelFileToDatabase" />
       <item index="1" class="java.lang.String" itemvalue="Python.transformExcelFileToSQL" />
+      <item index="2" class="java.lang.String" itemvalue="Python.transformExcelFilesToSQLiteDatabase" />
     </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="Python.transformExcelFileToSQL" />
+      <list size="2">
+        <item index="0" class="java.lang.String" itemvalue="Python.transformExcelFilesToSQLiteDatabase" />
+        <item index="1" class="java.lang.String" itemvalue="Python.transformExcelFileToSQL" />
       </list>
     </recent_temporary>
   </component>
@@ -415,28 +399,28 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-13" y="-13" width="2762" height="1770" extended-state="6" />
-    <editor active="false" />
+    <frame x="789" y="-2173" width="3866" height="2106" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14577039" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.120202556" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="The R Graphics" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Packages" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293348" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36814275" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3288264" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980832" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39854592" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4494382" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.398053" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -446,85 +430,44 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/transformExcelFileToSQL.py</url>
-          <line>62</line>
+          <url>file://$PROJECT_DIR$/transformExcelFilesToSQLiteDatabase.py</url>
+          <line>75</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/transformExcelFileToSQL.py</url>
-          <line>38</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="8" />
+      <option name="time" value="11" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/transformExcelFileToDatabase.py">
+    <entry file="file://$PROJECT_DIR$/test2.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="-1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/transformExcelFilesToLargeCSV.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1188">
           <caret line="35" column="26" lean-forward="false" selection-start-line="35" selection-start-column="26" selection-end-line="35" selection-end-column="26" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-            <element signature="e#448#479#0" expanded="false" />
-            <element signature="e#775#795#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/analysis_row125.csv">
+    <entry file="file://$PROJECT_DIR$/analyses/test_analysis.py" />
+    <entry file="file://$PROJECT_DIR$/analyses/test_analysis_nocomment.py" />
+    <entry file="file://$PROJECT_DIR$/transformExcelFilesToSQLiteDatabase.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/test_analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2772">
-          <caret line="65" column="24" lean-forward="false" selection-start-line="65" selection-start-column="24" selection-end-line="65" selection-end-column="24" />
+        <state relative-caret-position="1848">
+          <caret line="42" column="50" lean-forward="false" selection-start-line="42" selection-start-column="50" selection-end-line="42" selection-end-column="50" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/test_analysis_nocomment.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="704">
-          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/transformExcelFileToSQL.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/analysis100.r">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/analysis125.R">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/analyses/analysis100.r" />
+    <entry file="file://$PROJECT_DIR$/analyses/analysis125.r" />
     <entry file="file://$PROJECT_DIR$/tests.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
@@ -539,60 +482,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/transformExcelFileToDatabase.py">
+    <entry file="file://$PROJECT_DIR$/analyses/analysis_row125.csv" />
+    <entry file="file://$PROJECT_DIR$/transformExcelFilesToLargeCSV.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1188">
           <caret line="35" column="26" lean-forward="false" selection-start-line="35" selection-start-column="26" selection-end-line="35" selection-end-column="26" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-            <element signature="e#448#479#0" expanded="false" />
-            <element signature="e#775#795#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/analysis_row125.csv">
+    <entry file="file://$PROJECT_DIR$/analyses/analysis_row125.csv" />
+    <entry file="file://$PROJECT_DIR$/analyses/test_analysis.py" />
+    <entry file="file://$PROJECT_DIR$/analyses/test_analysis_nocomment.py" />
+    <entry file="file://$PROJECT_DIR$/transformExcelFilesToSQLiteDatabase.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/test_analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2772">
-          <caret line="65" column="24" lean-forward="true" selection-start-line="65" selection-start-column="24" selection-end-line="65" selection-end-column="24" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/test_analysis_nocomment.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/analysis100.r">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/analysis125.R">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/analyses/analysis100.r" />
+    <entry file="file://$PROJECT_DIR$/analyses/analysis125.r" />
     <entry file="file://$PROJECT_DIR$/tests.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
@@ -607,36 +519,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/transformExcelFileToDatabase.py">
+    <entry file="file://$PROJECT_DIR$/transformExcelFilesToLargeCSV.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1188">
+          <caret line="35" column="26" lean-forward="false" selection-start-line="35" selection-start-column="26" selection-end-line="35" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analyses/analysis_row125.csv" />
+    <entry file="file://$PROJECT_DIR$/analyses/test_analysis.py" />
+    <entry file="file://$PROJECT_DIR$/analyses/test_analysis_nocomment.py" />
+    <entry file="file://$PROJECT_DIR$/analyses/analysis100.r" />
+    <entry file="file://$PROJECT_DIR$/analyses/analysis125.r" />
+    <entry file="file://$PROJECT_DIR$/tests.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="-1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test2.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="-1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/transformExcelFilesToLargeCSV.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1540">
           <caret line="35" column="26" lean-forward="false" selection-start-line="35" selection-start-column="26" selection-end-line="35" selection-end-column="26" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-            <element signature="e#448#479#0" expanded="false" />
-            <element signature="e#775#795#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/analysis_row125.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/test_analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/analyses/analysis_row125.csv" />
+    <entry file="file://$PROJECT_DIR$/analyses/test_analysis.py" />
     <entry file="file://$PROJECT_DIR$/tests.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
@@ -651,15 +568,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/transformExcelFileToDatabase.py">
+    <entry file="file://$PROJECT_DIR$/transformExcelFilesToLargeCSV.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-            <element signature="e#448#479#0" expanded="false" />
-            <element signature="e#775#795#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -670,15 +582,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/transformExcelFileToDatabase.py">
+    <entry file="file://$PROJECT_DIR$/transformExcelFilesToLargeCSV.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-            <element signature="e#448#479#0" expanded="false" />
-            <element signature="e#775#795#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -689,15 +596,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/transformExcelFileToDatabase.py">
+    <entry file="file://$PROJECT_DIR$/transformExcelFilesToLargeCSV.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-            <element signature="e#448#479#0" expanded="false" />
-            <element signature="e#775#795#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -709,18 +611,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore" />
-    <entry file="file://$PROJECT_DIR$/transformExcelFileToDatabase.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1188">
-          <caret line="35" column="26" lean-forward="false" selection-start-line="35" selection-start-column="26" selection-end-line="35" selection-end-column="26" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-            <element signature="e#448#479#0" expanded="false" />
-            <element signature="e#775#795#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
@@ -735,60 +625,45 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/analysis125.R">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/analysis100.r">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/test_analysis_nocomment.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="704">
-          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/analyses/test_analysis_nocomment.py" />
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="310">
           <caret line="1595" column="0" lean-forward="false" selection-start-line="1595" selection-start-column="0" selection-end-line="1595" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analyses/analysis_row125.csv" />
+    <entry file="file://$PROJECT_DIR$/analyses/test_analysis.py" />
+    <entry file="file://$PROJECT_DIR$/transformExcelFilesToLargeCSV.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="35" column="26" lean-forward="false" selection-start-line="35" selection-start-column="26" selection-end-line="35" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analyses/analysis100.r" />
+    <entry file="file://$PROJECT_DIR$/analyses/analysis125.r" />
+    <entry file="file://$USER_HOME$/Anaconda2/Lib/site-packages/pandas/util/decorators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3740">
+          <caret line="90" column="0" lean-forward="false" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/transformExcelFileToSQL.py">
+    <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="42" column="50" lean-forward="false" selection-start-line="42" selection-start-column="50" selection-end-line="42" selection-end-column="50" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/analysis_row125.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="2376">
+          <caret line="54" column="0" lean-forward="false" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/analyses/test_analysis.py">
+    <entry file="file://$PROJECT_DIR$/transformExcelFilesToSQLiteDatabase.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="704">
-          <caret line="37" column="54" lean-forward="false" selection-start-line="37" selection-start-column="31" selection-end-line="37" selection-end-column="54" />
+        <state relative-caret-position="787">
+          <caret line="48" column="30" lean-forward="false" selection-start-line="48" selection-start-column="30" selection-end-line="48" selection-end-column="30" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>

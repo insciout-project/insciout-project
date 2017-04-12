@@ -1,0 +1,18 @@
+* use of Github,
+* make a common database,
+* view should be close to the database? or in analysis folder?
+* nomenclature:
+	- view73 instead of JAPR_language_73
+	- T1 instead of tmpT1
+	- keep the main comments (you don't know which sql files the new user will be openning first
+	- organise the header comment in a pretty way
+
+* the file: 
+29-004 COMPLETE.xls
+can not be open with usual/open source excel libraries in python.
+It is seen as an encryted file.
+
+* the file:
+test_luke/21-14-002.xls
+states that the JA Body is unavailable, is it true? (it seems filled)
+> I can make a list of suspicious "unavailability" while my program goes through them if you want.
