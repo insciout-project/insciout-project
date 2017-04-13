@@ -7,7 +7,7 @@ pd.set_option('precision', 5)
 
 # do we update or replace the current tables?
 REPLACE = True
-folder_names = glob.glob(".\\rawdata\\*\\")
+folder_names = glob.glob(os.path.join('.', 'rawdata', '*','' ))
 # note that we could directly import the column from an excel file
 # but it seems that LibreOffice makes xls files incompatible with pandas.
 # column_file = pd.ExcelFile("./Column Names.xls")
@@ -35,7 +35,7 @@ for ifolder, folder_name in enumerate(folder_names):
     metadata_table = pd.DataFrame(columns=metadata_columns)
     big_data_table = pd.DataFrame(columns=big_data_columns)
     print "-------------------------------------\nAccessing folder: " + folder_name
-    excel_files = glob.glob(folder_name + "\\*.xls")
+    excel_files = glob.glob( os.path.join(folder_name, "*.xls"))
     # excel_files = glob.glob(folder_name + "\\04-012 - COMPLETE.xls")
     for i, filepath in enumerate(excel_files):
         try:
@@ -98,8 +98,9 @@ for ifolder, folder_name in enumerate(folder_names):
         utils.upsert_to_db(big_data_table.ix[big_data_table.Source_Category == category,:],
                      category+"_table", conn, replace=REPLACE,
                      dup_cols= ['Reference'] if category == 'PR' else ['Reference', 'Source'])
-    print "Folder " + folder_name + " added successfully! \n\n"
+    print "Folder " + folder_name + " added successfully!"
 
     duplicated = metadata_table.duplicated(subset='Reference', keep='first')
     if any(duplicated):
-        print "--\nWARNING: duplicated References found:\n{}".format(metadata_table.ix[duplicated, 'Reference'].values)
+        print "--\nWARNING: duplicated References found:\n{}\n--".format(metadata_table.ix[duplicated, 'Reference'].values)
+    print '\n\n'

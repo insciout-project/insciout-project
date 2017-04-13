@@ -9,13 +9,13 @@ import glob, os
 # REPLACE is used when you want to replace/update existing views.
 
 REPLACE = False
-folder_names = glob.glob(".\\analyses\\*\\")
+folder_names = glob.glob(os.path.join('.', 'database', 'ViewQueries', '*',''))
 conn = sqlite3.connect("./database/InSciOut.sqlite3")
 cursor = conn.cursor()
 
 for folder_name in folder_names:
     print "Accessing folder: " + folder_name
-    sql_paths = glob.glob(folder_name + "\\*.sql")
+    sql_paths = glob.glob(os.path.join(folder_name, "*.sql"))
     for sql_path in sql_paths:
         view_name = os.path.splitext(os.path.basename(sql_path))[0].replace(' ', '_')
         with open(sql_path, 'r') as sql_file:

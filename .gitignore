@@ -4,3 +4,4 @@ analyses/.Rhistory
 analyses/.RData
 analyses/test.Rmd
 analyses/test.html
+*.pyc

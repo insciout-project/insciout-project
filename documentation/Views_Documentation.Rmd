@@ -1,0 +1,219 @@
+---
+title: "InSciOut SQL / SQLite tutorial"
+author: "Geoffrey MÃffÃ,Â©gardon"
+date: "4 March 2017"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+theme: journal
+highlight: pygment
+---
+
+```{r setup, include=FALSE}
+## will be hidden from the HTML file
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(knitr)
+library(dplyr)
+library(DBI)
+db <- dbConnect(RSQLite::SQLite(), dbname = "../database/InSciOut.sqlite3")
+```
+
+## What is a View?
+
+A `View` is:
+  
+  - stored in the database InSciOut.sqlite3
+  - a virtual table defined by a SQL query
+  - accessible as an usual table, (so that your can access view100 from view125)
+  - not using much of memory (that is just a SQL query).
+  - updated whenever the other tables/views get updated.
+  - easy to create with SQLiteStudio.
+  
+> More details on the organisation of the Database in the tutorial: `./tutorials/InSciOut_Tutorial_SQL_sqlite.html`.
+
+
+## View 125
+
+A view 'view 125' will be created for analysis 125. We use analysis 125 as a first example because of its simplicity.
+
+### What we want to do
+
+We use the analysis explained in row 125 in ```Data Analysis.xls```.
+We want to obtain a table that contains the columns:
+
+| Sample^1^ | Institution^2^ | Reference^3^ | JA_Design^4^ | PR_Advise^5^ | News_Source^6^ | News_Advices^7^ | News_Exageration^8^ | PR_Exageration^9^ | 
+|------:|-----|-----|-----|-----|-----|-----|-----|-----|
+
+1. Sample:
+: take column `Sample` when (Source == "News")
+2. Institution:
+: take column `Institution` when (Source == "News")
+3. Reference (PR number):
+: take column `Reference` when (Source == "News")
+4. JA_Design:
+:     take column `Design_Actual` when (Source == "Journal Article - Body")
+5. PR_Advise:
+:     take column `Advice_Code` when (Source == "Final Press Release")
+
+> **!WARNING!** note that in the document you speak about the JA - Body but   you cite cell E40, which correspond to PR
+
+6. News_Source
+:      take column `Source` when (Source_Category == "News")
+7. News_Advise
+:      take column `Advice_Code` when (Source_Category == "News")
+8. News_Exageration
+: Operation on **this** table:
+      + 1 if `News_Advice` > `PR_Advice`
+      + 0 if `News_Advice` = `PR_Advice`
+      + -1 if `News_Advice` < `PR_Advice`
+9. PR_Exageration
+:      to take from Analysis 100 (a100)
+
+> **!WARNING!** note that this last column needs input from Analysis 100
+
+### SQL code and Preview
+
+```{sql connection=db}
+SELECT
+-- // 'Select the following columns ...'
+Reference,  
+Meta_table.Institution, 
+Meta_table.Sample,  
+JABody_table.Design_Actual,  
+News_table.Source as News_Source,  
+PR_table.Advice_Code as PR_Advice, 
+News_table.Advice_Code as News_Advice, 
+CASE  
+    WHEN News_table.Advice_Code > PR_table.Advice_Code THEN 1 
+    WHEN News_table.Advice_Code < PR_table.Advice_Code THEN -1 
+    ELSE 0
+END News_Exageration, 
+A100.PR_Exageration  
+
+-- // 'From the following merged tables:'
+FROM 
+News_table 
+LEFT JOIN JABody_table USING(Reference) 
+LEFT JOIN Meta_table USING(Reference) 
+LEFT JOIN PR_table USING(Reference) 
+LEFT JOIN A100 USING(Reference) 
+
+```
+
+## View 100
+
+### What we want to do
+
+We use the analysis explained in row 100 in ```Data Analysis.xls```.
+We want to obtain a table that contains the columns:
+
+| Sample^1^ | Institution^2^ | Reference^3^ | JA_Design^4^ | JA_Actual_Sample^5^ | JA_Sample^6^ | PR_Sample^7^ | PR_Exageration^8^ | News_Uptake^9^ | Total_News^10^
+|------:|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+
+We want one row per PR.
+
+1. Sample:
+: take column `Sample` when (Source == "PR")
+2. Institution:
+: take column `Institution` when (Source == "PR")
+3. Reference (PR number):
+: take column `Reference` when (Source == "PR")
+4. JA_Design:
+:     take column `Design_Actual` when (Source == "Journal Article - Body")
+5. JA_Actual_Sample:
+:     take column `Sample_Actual` when (Source == "Journal Article - Body")
+
+> **!WARNING!** note that in the document you speak about the JA - Body but   you cite cell E40, which correspond to PR
+
+6. JA_Sample
+:      take minimum of `Sample_Code` between Source == "Journal Article - Body" and Source == "Journal Article - Title and Abstract". Or, when grouping by JA and Reference, we keep the minimum.
+
+7. PR_Sample
+:      take column `Sample_Code` when (Source_Category == "PR")
+
+> **!WARNING!** you refer to G29 in the spreadsheet, but I think that you meant E28
+
+8. PR_Exageration
+: Operation on **this** table:
+      + **IF PR_Sample is 4,** 
+      the exaggeration/understated column should read **-99**
+      + **IF PR_Sample is 1 OR 2 AND JA_Sample is 1;** 
+      the exaggeration/understated column should read **0** (i.e. correct)
+      + **IF PR_Sample is 1 OR 2 AND JA_Sample is 3;** 
+      the exaggeration/understated column should read **1** (i.e. exaggerated)
+      + **IF PR_Sample is 3 AND JA_Sample is 3;** 
+      the exaggeration/understated column should read **0** (i.e. correct)
+      + **IF PR_Sample is 3 AND JA_Sample is 1;** 
+      the exaggeration/understated column should read **-1** (i.e. understated)
+
+> **!WARNING!** wasn't there an easier way to encode your data? that seems very complicated. Why should `PR_Sample > JA_Sample` not work here?
+
+9. News_Uptake
+:      if there any news articles attached to the PR reference `Reference`
+
+10. Total_News
+:     if yes, how many news articles for each PR
+
+### SQL code and Preview
+
+```{sql connection=db}
+WITH -- Create temporary tables that makes SELECT easier
+  t1 AS -- makes things easier for the CASE / WHEN below
+    (SELECT
+        Reference, 
+        MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code) as JA_Sample_Code, 
+        PR_table.Sample_Code as PR_Sample_Code
+     FROM JABody_table 
+     LEFT JOIN JATitle_table USING(Reference)
+     LEFT JOIN PR_table USING(Reference)
+    ), -- don't forget the comma
+
+  NewsCount AS -- make the LEFT JOIN clearer
+    (SELECT Reference, COUNT() as Count 
+     FROM News_table GROUP BY Reference
+    )
+
+SELECT -- Select the columns you want to have:
+  Reference, 
+  Meta_table.Institution, 
+  Meta_table.Sample, 
+  JABody_table.Design_Actual as JA_Design, 
+  JABody_table.Sample_Actual as JA_Actual_Sample, 
+  t1.JA_Sample_Code as JA_Sample_Code, 
+  t1.PR_Sample_Code as PR_Sample_Code, 
+  CASE
+      WHEN t1.PR_Sample_Code IN (1,2) AND t1.JA_Sample_Code = 1 THEN 0
+      WHEN t1.PR_Sample_Code IN (1,2) AND t1.JA_Sample_Code = 3 THEN 1
+      WHEN t1.PR_Sample_Code = 3      AND t1.JA_Sample_Code = 3 THEN 0
+      WHEN t1.PR_Sample_Code = 3      AND t1.JA_Sample_Code = 1 THEN -1
+      WHEN t1.PR_Sample_Code = 4                             THEN -99
+  END
+  PR_Exageration, 
+  CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN 'yes' ELSE 'no'
+  END 
+  News_Uptake,
+  CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN NewsCount.Count ELSE 0
+  END 
+  Total_News 
+
+FROM -- list ALL the tables used in SELECT (even the temporary)
+PR_table
+LEFT JOIN JABody_table USING(Reference)
+LEFT JOIN Meta_table USING(Reference)
+LEFT JOIN NewsCount USING(Reference)
+LEFT JOIN t1 USING(Reference)
+
+```
+
+
+
+
+
