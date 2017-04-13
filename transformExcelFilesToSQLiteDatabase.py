@@ -7,6 +7,7 @@ pd.set_option('precision', 5)
 
 # do we update or replace the current tables?
 REPLACE = True
+folder_names = glob.glob(".\\rawdata\\*\\")
 # note that we could directly import the column from an excel file
 # but it seems that LibreOffice makes xls files incompatible with pandas.
 # column_file = pd.ExcelFile("./Column Names.xls")
@@ -30,19 +31,17 @@ data_columns = df_col.iloc[11:, 2].tolist()
 #  'RCT_MS1_WordsTM',  'RCT_MS2',  'RCT_MS2_WordsTM',  'RCT_SDS',  'RCT_SDS_Quote',  'RCT_SDS_WordsTM']
 big_data_columns = ['Reference'] + data_columns
 
-
-folder_names = glob.glob(".\\rawdata\\*\\")
 for ifolder, folder_name in enumerate(folder_names):
     metadata_table = pd.DataFrame(columns=metadata_columns)
     big_data_table = pd.DataFrame(columns=big_data_columns)
-    print "Accessing folder: " + folder_name
+    print "-------------------------------------\nAccessing folder: " + folder_name
     excel_files = glob.glob(folder_name + "\\*.xls")
     # excel_files = glob.glob(folder_name + "\\04-012 - COMPLETE.xls")
     for i, filepath in enumerate(excel_files):
         try:
             sheet = pd.ExcelFile(filepath)
         except:
-            print "Can't open file: " + filepath + ". It will not be included. Check if it is an encrypted/protected file."
+            print "--\nWARNING: Can't open file: " + filepath + ". It will not be included. Check if it is an encrypted/protected file.\n--"
             continue
         df = sheet.parse(0, header=None)
         # print filepath
@@ -63,8 +62,19 @@ for ifolder, folder_name in enumerate(folder_names):
         data_table[data_columns[0]].iloc[2:4] = 'JA' # those rows are still here (as we only filter after)
         data_table.columns = data_columns # mandatory to make append
         data_table = data_table[1:]
-        data_table = data_table[data_table.isFilled == 1]
 
+        # SUSPICION TESTS:
+        # we try to keep only the rows that contain something!
+        filling_filter = data_table.isFilled == 1
+        secondary_filter = ~pd.isnull(data_table.IV)
+        if any(filling_filter != secondary_filter):
+            print "--\nWARNING: In Excel File {}, the following Column(s) (i.e. Source) are marked as 'not filled' while it contains information. \n" \
+                  "{} \nThat Source won't be added unless you marked it as 'filled'.\n--"\
+                .format(filepath, data_table.Source[filling_filter != secondary_filter].values)
+
+        # whatever the results we don't take the risk of taking suspicious Sources
+        # we try to keep only the row that contains something!
+        data_table = data_table[data_table.isFilled == 1]
         # we include the metadata reference in the data.
         # to do so we simple repeat the metadata (last row of metadata_table) to fill the data table
         rep_metadata = pd.DataFrame(data=[metadata_table['Reference'].iloc[-1]] * len(data_table),
@@ -89,3 +99,7 @@ for ifolder, folder_name in enumerate(folder_names):
                      category+"_table", conn, replace=REPLACE,
                      dup_cols= ['Reference'] if category == 'PR' else ['Reference', 'Source'])
     print "Folder " + folder_name + " added successfully! \n\n"
+
+    duplicated = metadata_table.duplicated(subset='Reference', keep='first')
+    if any(duplicated):
+        print "--\nWARNING: duplicated References found:\n{}".format(metadata_table.ix[duplicated, 'Reference'].values)

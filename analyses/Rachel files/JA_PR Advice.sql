@@ -1,4 +1,4 @@
---// Analysis = JA >PR : Advice (see row 43 on Analysis.xls
+-- Analysis = JA >PR : Advice (see row 43 on Analysis.xls
 
 -- Includes the following columns:
 -- Sample, Institution, PR Number, Study Design (JA), PR: Advice, JA: Advice, Exaggeration/understated, News Uptake, Total Number of News Articles, 
@@ -17,11 +17,10 @@ SELECT Reference,
 -- create a tmp table using WITH to calculate news uptake and number of news articles
 NewsCount AS
 (
-SELECT Reference, COUNT() as Count
+SELECT Reference, COUNT(*) as Count
 FROM News_table
 GROUP BY Reference
 )
-
 
 SELECT
 Reference,

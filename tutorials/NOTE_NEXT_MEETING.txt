@@ -7,6 +7,12 @@
 	- keep the main comments (you don't know which sql files the new user will be openning first
 	- organise the header comment in a pretty way
 
+* nomenclature for views is important so that our python code can recreate the database if there is a problem. Please use:
+'my_view_name.sql' for the view 'my_view_name'
+
+* furthermore: if a view is using another view, the name of the used view should come first when ordered by alphanumeric:
+> view100 can not be used in view12
+
 * the file: 
 29-004 COMPLETE.xls
 can not be open with usual/open source excel libraries in python.
@@ -16,3 +22,5 @@ It is seen as an encryted file.
 test_luke/21-14-002.xls
 states that the JA Body is unavailable, is it true? (it seems filled)
 > I can make a list of suspicious "unavailability" while my program goes through them if you want.
+
+
