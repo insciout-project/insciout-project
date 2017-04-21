@@ -5,3 +5,4 @@ analyses/.RData
 analyses/test.Rmd
 analyses/test.html
 *.pyc
+documentation/tutorials/.Rhistory
