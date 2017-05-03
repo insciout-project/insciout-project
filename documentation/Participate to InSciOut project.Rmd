@@ -303,6 +303,15 @@ Because Github works with Git, it can manage conflicts when a file is modified b
 While collaborating, you will be using this workflow (Centralized Workflow):
 https://www.atlassian.com/git/tutorials/comparing-workflows#centralized-workflow
 
+Basically you need to check the box [rebase] in preference of SourceTree.
+Then each times you want to share your changes:
+- commit (if not already)
+- pull
+- [solve conflict if any]
+- push
+
+Note that you can commit locally any many times as you want before to share your changes.
+
 
 
 
