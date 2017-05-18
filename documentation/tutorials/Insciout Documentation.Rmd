@@ -1,0 +1,886 @@
+---
+title: "InSciOut Documentation"
+author: "Provided by the InSciOut Team"
+
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    toc_depth: 4
+theme: journal
+highlight: pygment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(knitr)
+library(dplyr)
+```
+
+
+
+``` {r include=FALSE}
+library(DBI)
+db <- dbConnect(RSQLite::SQLite(), dbname = "C:/Users/Rachel/Google Drive/Insciout Project/The TRIAL/Information for Geoffrey/InSciOut Project/database/InSciOut.db")
+```
+
+![](img/logo1.png)
+
+
+## Introduction  
+   
+This documentation details:  
+  
+1. The InSciOut database
+    i) How to access the database
+    ii) Contents of the database
+     * The PR table  
+     * The JA table  
+     * The News table  
+     * The Meta table  
+     * Inventory of the columns     
+2. How to view the database
+    i) Using SQLiteStudio
+     * Making a View 
+    ii) Using Atom
+    iii) Using RStudio
+3. How to extract relevant data tables using SQLiteStudio
+    i) The exaggeration of *advice* between the journal article (JA) and the press release (PR)
+    ii) The exaggeration of *causal language* between the journal article (JA) and the press release (PR)
+    iii) The exaggeration of *sample* between the journal article (JA) and the press release (PR)
+    iv) The exaggeration of *advice* between the journal article (JA) and the news
+    v) The exaggeration of *causal language* between the journal article (JA) and the news
+    vi) The exaggeration of *sample* between the journal article (JA) and the news
+
+## 1. The InSciOut database 
+  
+***[some general info here???]  ***
+  
+### i) How to access the database
+  
+[info on how to get hold of the database to go here -i.e. where we're going to host it] 
+  
+### ii) Contents of the database
+  
+The database divides the data into four `Root Tables`:  
+  
+#### The PR table
+  
+Contains all the data from the Press Releases. It is the concatenation of the content from E7 to E55 across all excel coding spreadsheets and all samples. Note that the rows of the table correspond to one Press Release. Hence, the columns of the table correspond to the rows in the excel coding spreadsheet (i.e. the data has been transposed between the excel coding sheet and the table). 
+
+Here is a preview:  
+*note that we pass the `db` to Rmarkdown connection*
+
+```{sql connection=db}
+SELECT * FROM PR_table
+LIMIT 1
+
+```
+
+#### The JA table  
+  
+Contains all the data from the Journal Articles. It is the concatenation of the content from [F:G, 7:55] across all excel coding spreadsheets and all samples. Hence, both the columns "Journal Article - Title and Abstract" and "Journal Article - Body" are contained.  
+  
+The JA table is divided into 2 views:
+
+1. the JATitle table
+: returns the rows of the JA_table that come from the Journal Article Abstrat and Title,
+2. the JABody table
+: returns the rows of the JA_table that come from the Journal Article's Body.
+
+A `view` as we will see below is a virtual table that is generated from the actual table in the database. These virtual tables can be used as if there are actual table.
+
+
+Here is a preview of the JA Title table:
+```{sql connection=db}
+SELECT * FROM JATitle_table
+LIMIT 1
+
+```
+
+Here is a preview of the JA Body table:
+```{sql connection=db}
+SELECT * FROM JABody_table
+LIMIT 1
+
+```
+
+
+#### The News table 
+
+Contains all the data from the News. It is the concatenation of the content from [H:AV, 7:55] across all excel spreadsheets and all samples. Note that only the news columns that have been filled are kept.  
+
+Here is a preview:  
+*note that there are several News with the same `Reference`*
+ 
+```{sql connection=db}
+SELECT * FROM News_table
+LIMIT 2
+
+```
+  
+#### The Meta table 
+    
+Contains the meta information for the Press Releases and related Journal Articles and News. It is the concatenation of the content from [A:B, 1:8] across all excel coding spreadsheets and all samples. 
+
+*note. every table contains a column* `Reference` *that contains the reference number for each entry/row. This unique identifier is unique for every PR and should have the following nomenclature: *`[Sample]-[Institution]-[Year]-[Number]`
+  
+This division of the information into four tables will allow us to cross easily the information between Meta, PR, JA and News. To cross information between several tables is called a `MERGE` or `JOIN` operation, which is at the core of `SQL` and modern data manipulation libraries (R, Python, MATLAB). See below for how to implement this operation.
+  
+Here is a preview:
+  
+```{sql connection=db}
+SELECT * FROM Meta_table
+LIMIT 1
+
+```
+
+#### Inventory of the Columns
+
+A full inventory of the columns can be found in html format [here](file:///C:/Users/Rachel/Documents/InSciOut/InSciOut-Project/documentation/tutorials/Inventory_of_the_Columns.html)  
+  
+Or in csv format here: [*** to insert location***]
+
+  
+## 2. How to view the database 
+   
+### i) Using SQLiteStudio
+
+SQLiteStudio is a GUI to manage the database. It can be used to create new tables, new views, and to explore and query the data (see below).
+  
+*note. we have experienced a tendency for SQLiteStudio to crash which can result in lost code. To be safe, save changes regularly. Alternatively we recommend using* [Atom](https://atom.io/) *or* [RStudio](www.rstudio.com) *as an SQL editor while having SQLiteStudio open to check the content of the database. Once your SQL query is giving you the table you want (don't forget to save regularly as well), you can copy-paste the code to SQLiteStudio.*
+
+In SQLiteStudio, go to `Database` -> `Connect to Database` and select the database. 
+
+You can see the data by double clicking on the tables or views within the *Databases* window. Once open click on the *Data* tab to see the data.
+
+You can also use the editor to explore the database. Press `ALT` + `E` to open the SQL editor and press `F9` or the blue play symbol to run any SQL queries.  
+The basic query follows a simple `SELECT` and `FROM` structure where you select all the columns that you want to include in your output table and then the tables that you need to collect the information from.
+For example, if you wanted to create a table of all the References, Press Release titles, Journal Article titles and their causal codes you would write the following code:
+*note. This table is limited to 2 lines of data. To see the full table remove the last line of code* `LIMIT 2`
+  
+
+```{sql connection=db, verbatim = T}
+--// Select all of the data we want in our table in the order that we want it to be presented
+SELECT
+
+Reference, -- we want the reference to identify each case (note the commas on all but the last item in the list)
+PR_table.Title_Rship as PR_title,-- we want the PR titles (note we have to rename this using AS. This is because the variable has the same name for both the PR and JA)
+PR_table.Title_Code as PR_title_Code, -- we want the causal code for the PR titles (again renamed)
+JATitle_table.Title_Rship as JA_title, -- we want the JA titles (again renamed)
+JATitle_table.Title_Code as JA_title_Code -- we want the causal code for the JA titles (again renamed)
+
+--// now list where we need to source the data from
+FROM
+PR_table  -- we use the PR table as a base table so that we have 1 row per press release
+LEFT JOIN JATitle_table USING(Reference) -- we JOIN the JATitle_table using the common unique ID reference
+LIMIT 2 --***REMOVE THIS LINE TO SEE THE FULL TABLE***
+```
+
+
+#### **Making A View** 
+ 
+You can transform any SQL query that extracts a table from the database into a `View`.
+
+A `View` is:
+
+  - a virtual table defined by a SQL query
+  - accessible as a usual table,
+  - stored in the database
+  - not using much memory (that is just a SQL query).
+  - updated whenever the other tables/views get updated.
+  - easy to create with SQLiteStudio.
+  
+Next to each `View`, we recommend that you save the SQL query related to this view in a text file next to the database (e.g. `view001.sql` to make it recognizable) - use 'Save SQL to file' button or `Ctrl` + `s` and remember to use '.sql' as an extension. You should be saving your queries **regularly** anyway when writing them up. This will avoid losing your work in case of a software crash. And even better: it will avoid losing all the views in case of a database corruption.
+
+Optionally, you will also be able to export any `View` into a CSV file with the button 'export Results'.
+
+
+The simplest way to make a view is to use SQLiteStudio as it is a GUI. 
+
+  - Click on `Tools` then `Open SQL Editor` or press `ALT` + `E`. 
+  - Write the query to make the table you want, or copy-paste the query from Atom/Rstudio.
+  - Click on the 'Start/Play' button or press `F9` to run the query and check that you obtain what you want. 
+  - When you are done, click on 'Create View from Query' (this looks like a blue square with a yellow lightening bolt through it).
+  
+Your table should now appear as a new view in the database.
+
+
+
+  
+### ii) Using Atom
+
+Atom is a modern text and code editor. It is very modular and it is easy to install a SQL plugin.
+
+
+In Atom, you need to install the following packages from the package menu:
+- quick-query
+- quick-query-sqlite
+
+Then, make a new file. Press `ALT` + `\` to open the database explorer. Click the "+" tab to open the data base. Note that you'll need to select `SQLite` in the list `protocol`. Now, you are ready to write some SQL queries. Click the `Play` button to run your SQL query. You can also press `F5` to run the query.
+  
+### iii) Using RStudio
+
+RStudio is the most common IDE for R. Thankfully, it knows SQL too.
+
+
+In RStudio, the simplest way is to create an `RMarkdown` document. You will get an example document, remove what you don't need and then copy-paste the following:
+
+```
+{r}
+library(DBI)
+db <- dbConnect(RSQLite::SQLite(), dbname = "../database/InSciOut.db")
+```
+
+With ``` surrounding the block of code to form a **chunk of code** that can be run.
+
+The above chunk of code is in R, which is told by `{r}`. It creates a connection to the database, which we call `db`.
+
+Then you can make any query using this kind of chunk:
+
+``` {sql connection=db, verbatim = T}
+SELECT * FROM Meta_table
+LIMIT 1
+```
+With ``` surrounding the block of code.
+
+The above chunk of code is in SQL, which is told by `{sql}`.
+The `connection=db` uses `db` to connect R to the database. Each chunk code that follows starts with `{sql connection=db}` to tell R to use `db` for the SQL query I am writing.
+
+
+
+  
+## 3. How to extract relevant data tables using SQL
+
+
+The data tables extracted in this tutorial are for the following analyses:  
+
+1. The exaggeration of *advice* between the journal article (JA) and the press release (PR)  
+2. The exaggeration of *causal language* between the JA and PR 
+3. The exaggeration of *sample* between the JA and PR   
+4. The exaggeration of *advice* between the JA and the news  
+5. The exaggeration of *causal language* between the JA and the news  
+6. The exaggeration of *sample* between the JA and the news  
+
+*note. tables 1-3 also include whether or not there was news uptake for each PR and the number of news articles for each PR*  
+*These tables need to be extracted first so that the variables can be entered into the tables below.*  
+    
+### i).   The exaggeration of ***advice*** between the journal article (JA) and the press release (PR) 
+  
+*note. This table is used to create the view "View001"*  
+*To save as a view see instructions [above](Making a View).*
+  
+For this analysis we need to compare the highest code for advice in the JA with that of the PR to determine whether or not the PR is exaggerated relative to the JA.  
+  
+To create the data table we need to extract the following columns from the database:   
+
+| Reference^1^ | Institution^2^ | Sample^3^ | Design_Actual^4^ | PR_Advice^5^ | JA_Advice^6^ | PR_Advice_Exaggeration^7^ | News_Uptake^8^| Total_News^9^ | 
+|------:|-----|-----|-----|-----|-----|-----|-----|-----|
+
+1. Reference:
+: The unique identifier for each Press Release
+2. Institution:
+: Institution code (see ***XXX*** for codes)
+3. Sample:
+: Indicates which sample the data came from (data is sourced from multiple projects)
+4. Design_Actual
+: Can be used to separate data according to study design
+5. PR_Advice:
+: What advice code was given to the press release (0 = none; 2 = explicit, not to the reader, 3 = explicit, to the reader)
+6. JA_Advice:
+: What was the strongest advice code present in the JA? This variable needs to be calulated by taking the highest advice code from the JA abstract & JA body. This is coded in a temporary table (`t1`) using `WITH` and `MAX`
+7. PR_Advice_Exaggeration:
+: Was the PR advice code the same as the JA advice code (0 = no exaggeration), greater than (1 = exaggerated), or less than the JA code (-1 = understated).This variable needs to be calulated using `CASE` and `WHEN` with the rules below.
+
+
+ **Rules for calculating whether or not the PR is exaggerated relative to the JA **
+  
+ **IF** PR Advice =0 AND JA Advice = 0  **THEN**    -99 (not applicable - there is no advice to code)  
+ **IF** PR Advice =  JA Advice          **THEN**    0 (no exaggeration)  
+ **IF** PR Advice is > JA Advice        **THEN**    1 (exaggerated)  
+ **IF** PR Advice is < JA Advice        **THEN**    -1 (understated)   
+  
+  
+Information on news uptake can also be added to this table to see whether exaggeration of advice is associated with news:  
+  
+8. News_Uptake:
+: Did the PR receive news coverage (1 = yes, 0 = no). First we calculate the number of news articles in a temporary table (`NewsCount`) using `COUNT`. We then code whether or not there was uptake in the main table using `CASE`, `WHEN`, and `NOT NULL` (i.e. when count >0 then there was news uptake)
+9. Total_News:
+: How many news articles did the PR receive? Calculated in the temporary table (`NewsCount`) using `COUNT` and then coded in the main table using `CASE` and `WHEN`
+  
+  
+The SQL code to extract this table, along with an example of the table, is presented below.  
+*note. This table is limited to 2 rows of data. To see the full table remove the last line of code:* `LIMIT 2`
+
+```{sql connection=db, verbatim = T}
+--// Analysis = JA >PR : Advice - Creates View001
+
+-- Includes the following columns: Reference, Institution, Sample, Design_Actual,JA_Advice, PR_Advice, PR_Advice_Exaggeration, News_Uptake, Total_News, 
+
+-- first create a temporary table (t1) to calcuate the strongest JA advice code (highest number in this case - MAX)
+WITH
+t1 AS (
+SELECT Reference,
+    MAX(JABody_table.Advice_Code, JATitle_table.Advice_Code) as JA_advice
+FROM JABody_table
+LEFT JOIN JATitle_table USING(Reference)
+    ),
+    
+-- create a temporary table using WITH to calculate news uptake and number of news articles
+NewsCount AS (
+SELECT 
+Reference, 
+COUNT() as Count
+FROM News_table
+GROUP BY Reference -- counts the number according to the reference
+)
+
+SELECT
+Reference,
+Meta_table.Institution, 
+Meta_table.Sample,
+JABody_table.Design_Actual,
+t1.JA_Advice as JA_Advice, -- max. advice from JA see WITH function above
+PR_table.Advice_Code as PR_Advice,
+
+--  now calculate whether or not the PR is exaggerated compared to the JA
+CASE
+    WHEN PR_table.Advice_Code = 0 AND t1.JA_Advice = 0    THEN -99
+    WHEN PR_table.Advice_Code = t1.JA_Advice              THEN 0
+    WHEN PR_table.Advice_Code > t1.JA_Advice              THEN 1
+    WHEN PR_table.Advice_Code < t1.JA_Advice              THEN -1
+    ELSE 0
+END 
+PR_Advice_Exaggeration, 
+-- add in news count and total news
+CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN 1 ELSE 0
+END
+News_Uptake,    
+CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN NewsCount.Count ELSE 0
+END
+Total_News    
+
+FROM
+PR_table
+LEFT JOIN Meta_table USING(Reference)
+LEFT JOIN JABody_table USING(Reference)
+LEFT JOIN NewsCount USING(Reference)
+LEFT JOIN t1 USING(Reference)
+
+LIMIT 2 --***REMOVE THIS LINE TO SEE THE FULL TABLE***
+
+```
+
+*note. This table needs to be saved as a view so that *`PR_Advice_Exaggeration` *can be used later when analysing whether the News is exaggerated relative to the JA. *
+  
+
+### ii)   The exaggeration of ***causal language*** between the JA and the PR 
+  
+*note. This table is used to create the view "View002"*  
+*To save as a view see instructions above.*
+  
+For this analysis we need to compare the highest code for causal language in the PR to the study design to determine whether or not the PR is exaggerated relative to the study design.  
+  
+To create the data table we need to extract the following columns from the database:   
+
+| Reference^1^ | Institution^2^ | Sample^3^ | Design_Actual^4^ | PR_CaCode^5^ | PR_CL_Exaggeration^6^ | News_Uptake^7^| Total_News^8^ | 
+|------:|-----|-----|-----|-----|-----|-----|-----|
+
+
+1. Reference:
+: as above
+2. Institution:
+: as above
+3. Sample:
+: as above
+4. Design_Actual:
+: Used here to determine whether or not the language has been exaggerated relative to the study design
+5. PR_CaCode:
+: We need to take the highest causal language code from the PR title and main statement, *but* only when the title and main statement have the same IV and DV (using the variable `TMS_IVDV_Same`). If they do not refer to the same IV and DV use the the main statement. This variable is calculated in the temporary table `t1` using `WITH` and `MAX`
+6. PR_CL_Exaggeration:
+: Was the language used in the press release exaggerated relative to the study design? 
+  
+To answer this question we follow the recommendations from [Adams et al.](https://www.ncbi.nlm.nih.gov/pubmed/27808530) where:   
+a) correlational statements, ambiguous statements and conditional cause statements (Codes 2-4) are viewed as appropriate for observational designs (Codes 1, 2, 3, 5 OR 6)  
+b) can cause and cause statements (Codes 5 and 6) are viewed as appropriate for experimental designs (Codes 4, 7 OR 9)
+
+This variable needs to be calulated using `CASE` and `WHEN` with the rules below.
+  
+  
+**Rules for calculating whether or not the PR is exaggerated relative to the study design **
+  
+**IF** Study Design = 0 (qualitative) **THEN** -99 (not applicable - does not apply to causality)  
+**IF** Study Design = 8 (mixed methods) **THEN** -99 (not applicable - cannot determine which statement relates to what method)  
+**IF** PR Causal Language = 0 **THEN** -99 (not applicable - no cause mentioned)  
+**IF** PR Causal Language = 1 **THEN** -99 (not applicable - mentions no cause/ difference)  
+**IF** PR Causal Language = -9 **THEN** -99 (not applicable - IV and DV not mentioned)   
+  
+**IF** PR Causal Language = 2,3 OR 4 AND Study Design = 1, 2, 3, 5 OR 6 **THEN** 0 (not exaggerated)  
+**IF** PR Causal Language = 5 OR 6 AND Study Design = 4, 7 OR 9 **THEN** 0 (not exaggerated)  
+**IF** PR Causal Language = 5 OR 6 AND Study Design = 1, 2, 3, 5 OR 6 **THEN** 1 (exaggerated)  
+**IF** PR Causal Language = 2,3 OR 4 AND Study Design = 4, 7 OR 9 **THEN** -1 (understated)
+  
+  
+Information on news uptake can also be added to this table to see whether exaggeration of causal language is associated with news:  
+  
+8. News_Uptake:
+: as above
+9. Total_News:
+: as above
+  
+  
+The SQL code to extract this table, along with an example of the table, is presented below.  
+*note. This table is limited to 2 rows of data. To see the full table remove the last line of code:* `LIMIT 2`
+
+```{sql connection=db, verbatim = T}
+---/// Analysis = JA > PR: Causal language - Creates View002
+
+--- need columns: Reference, Institution, Sample, Design_Actual,PR_CaCode, PR_CL_Exaggeration, News_Uptake, Total_News,
+
+
+-- need a temporary table to calculate the causal lang of the PR (PR_CaCode)
+-- when IV and DV are the same in the title and the MS (TMS_IVDV_Same = 1) take the highest (from title and main statement)
+-- when they're not the same take the main statement code
+WITH
+t1 AS (
+SELECT 
+Reference,
+   CASE 
+    WHEN PR_table.TMS_IVDV_Same = 1  THEN MAX(PR_table.Title_Code, PR_table.MS_Code)
+    WHEN PR_table.TMS_IVDV_Same = 0  THEN PR_table.MS_Code
+    END
+    PR_CaCode
+    
+    FROM PR_table
+    ),
+
+-- create a temporary table to calculate news uptake and number of news articles
+NewsCount AS (
+SELECT 
+Reference, 
+COUNT() as Count
+FROM News_table
+GROUP BY Reference -- counts the number according to the reference
+)
+
+SELECT
+Reference,
+Meta_table.Institution, 
+Meta_table.Sample,
+JABody_table.Design_Actual, 
+t1.PR_CaCode,
+
+--- is the PR code exaggerated compared to the study design?
+
+CASE
+   WHEN JABody_table.Design_Actual IN (0,8)                                   THEN -99
+   WHEN t1.PR_CaCode IN (0,1,-9)                                              THEN -99
+   WHEN JABody_table.Design_Actual IN (1,2,3,5,6) AND t1.PR_CaCode IN (2,3,4) THEN 0
+   WHEN JABody_table.Design_Actual IN (4,7,9)     AND t1.PR_CaCode IN (2,3,4) THEN -1
+   WHEN JABody_table.Design_Actual IN (1,2,3,5,6) AND t1.PR_CaCode IN (5,6)   THEN 1
+   WHEN JABody_table.Design_Actual IN (4,7,9)     AND t1.PR_CaCode IN (5,6)   THEN 0
+   END
+   PR_CL_Exaggeration,
+
+
+-- add in news count and total news
+CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN 1 ELSE 0
+END
+News_Uptake,
+CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN NewsCount.Count ELSE 0
+END
+Total_News
+
+FROM
+PR_table
+LEFT JOIN Meta_table USING(Reference)
+LEFT JOIN JABody_table USING(Reference)
+LEFT JOIN t1 USING(Reference)
+LEFT JOIN NewsCount USING(Reference)
+LIMIT 2 --***REMOVE THIS LINE TO SEE THE FULL TABLE***
+
+```
+ 
+
+*note. This table needs to be saved as a view so that *`PR_CL_Exaggeration` *can be used later when analysing whether the News is exaggerated relative to the JA. *
+  
+    
+### iii).   The exaggeration of ***sample*** between the JA and the PR 
+  
+*note. This table is used to create the view "View003"*  
+*To save as a view see instructions above.*
+  
+For this analysis we need to compare the sample code in the PR to the actual sample reported in the JA to determine whether or not the PR is exaggerated.  
+  
+To create the data table we need to extract the following columns from the database: 
+  
+| Reference^1^ | Institution^2^ | Sample^3^ | Design_Actual^4^ | Actual_Sample^5^ | PR_Sample_Exaggeration^6^ | News_Uptake^7^| Total_News^8^ | 
+|------:|-----|-----|-----|-----|-----|-----|-----|
+
+
+1. Reference:
+: as above
+2. Institution:
+: as above
+3. Sample:
+: as above
+4. Design_Actual:
+: Can be used to separate data according to study design
+5. Actual_Sample:
+: What samle was used in the study (1= explicit human, 2 = implicit human, 3 = non-human, 4 = mixed)?
+6. PR_Sample_Exaggeration:
+: Is the sample in the PR the same as the actual sample used (0 = no exaggeration), or has it been exaggerated (1) or understated (-1). This variable needs to be calulated using `CASE` and `WHEN` with the rules below.
+
+**Rules for calculating whether or not the PR is exaggerated relative to the actual sample **
+  
+**IF** PR Sample = 4(mixed sample) **THEN** -99 (not applicable - cannot determine which statement relates to which sample)  
+**IF** PR Sample = 1 OR 2 AND JA Sample = 1 **THEN** 0 (not exaggerated)  
+**IF** PR Sample = 3 AND JA Sample = 3 **THEN** 0 (not exaggerated)  
+**IF** PR Sample = 1 OR 2 AND JA Sample = 3 **THEN** 1 (exaggerated)  
+**IF** PR Sample = 3 AND JA Sample = 1 **THEN** -1 (understated)  
+
+  
+Information on news uptake can also be added to this table to see whether exaggeration of causal language is associated with news:  
+  
+8. News_Uptake:
+: as above
+9. Total_News:
+: as above 
+  
+The SQL code to extract this table, along with an example of the table, is presented below.  
+*note. This table is limited to 2 rows of data. To see the full table remove the last line of code:* `LIMIT 2`
+
+```{sql connection=db, verbatim = T}
+---/// Analysis = JA > PR: Sample - Creates View003
+
+--- need columns: Reference, Institution, Sample, Design_Actual, Actual_Sample, PR_Sample, PR_Sample_Exaggeration, News_Uptake, Total_News,
+
+-- create a temporary table to calculate news uptake and number of news articles
+WITH
+NewsCount AS -- make the LEFT JOIN clearer
+    (SELECT 
+    Reference, 
+    COUNT() as Count 
+    FROM News_table GROUP BY Reference -- counts the number according to the reference
+    )
+
+SELECT
+Reference,
+Meta_table.Institution, 
+Meta_table.Sample,
+JABody_table.Design_Actual, 
+JABody_table.Sample_Actual as Actual_Sample,
+PR_table.Sample_Code as PR_Sample,
+--- calculate whether or not the PR is exaggerated
+CASE
+    WHEN PR_table.Sample_Code IN (1,2) AND JABody_table.Sample_Actual IN (1,2) THEN 0
+    WHEN PR_table.Sample_Code IN (1,2) AND JABody_table.Sample_Actual = 3      THEN 1
+    WHEN PR_table.Sample_Code =3       AND JABody_table.Sample_Actual = 3      THEN 0
+    WHEN PR_table.Sample_Code =3       AND JABody_table.Sample_Actual IN (1,2) THEN -1
+    WHEN PR_table.Sample_Code =4       OR JABody_table.Sample_Actual =4        THEN -99
+END
+PR_Sample_Exaggeration,
+
+--- add news uptake / number of news
+CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN 1 ELSE 0
+  END 
+News_Uptake,
+  CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN NewsCount.Count ELSE 0
+END 
+Total_News 
+
+FROM
+PR_table
+LEFT JOIN Meta_table USING(reference)
+LEFT JOIN JABody_table USING(reference)
+LEFT JOIN NewsCount USING(reference)
+LIMIT 2 --***REMOVE THIS LINE TO SEE THE FULL TABLE***
+
+```
+
+
+### iv). The exaggeration of ***advice*** between the JA and the News  
+
+*note. This table is used to create the view "View004"*  
+*To save as a view see instructions above.*
+  
+For this analysis we need to compare the highest code for advice in the JA with that of the news to determine whether or not the news is exaggerated relative to the JA. We can also look at the odds of the News being exaggerated when the Press Release is, or is not, exaggerated.   
+  
+To create the data table we need to extract the following columns from the database:   
+
+| Reference^1^ | Institution^2^ | Sample^3^ | Design_Actual^4^ | JA_Advice^5^ | News_Source^6^ | News_Advice^7^ | News_Advice_Exaggeration^8^| PR_Advice_Exaggeration^9^ | 
+|------:|-----|-----|-----|-----|-----|-----|-----|-----|
+
+1. Reference:
+: as above
+2. Institution:
+: as above
+3. Sample:
+: as above
+4. Design_Actual
+: as above
+5. JA_Advice:
+: What was the strongest advice code present in the JA (0 = none; 2 = explicit, not to the reader, 3 = explicit, to the reader)? This can be taken from View001 `View001.JA_Advice`
+6. News_Source:
+: Which news article was it (e.g. Daily Mail, Mirror, Telegraph, BBC Radio 2)?
+7. News_Advice:
+: What advice code was given to the news article (0 = none; 2 = explicit, not to the reader, 3 = explicit, to the reader)
+8. News_Advice_Exaggeration
+: Was the news advice code the same as the JA advice code (0 = no exaggeration), greater than (1 = exaggerated), or less than the JA code (-1 = understated).This variable needs to be calulated using `CASE` and `WHEN` with the rules outlined below:
+
+**Rules for calculating whether or not the News is exaggerated relative to the JA **
+ **IF** News Advice =0 AND JA Advice = 0  **THEN**    -99 (not applicable - there is no advice to code)  
+ **IF** News Advice =  JA Advice          **THEN**    0 (no exaggeration)  
+ **IF** News Advice is > JA Advice        **THEN**    1 (exaggerated)  
+ **IF** News Advice is < JA Advice        **THEN**    -1 (understated)   
+
+9. PR_Advice_Exaggeration:
+: Was the Press Release exaggerated? We want to know the odds that the news articles were exaggerated when the press release was also exaggerated versus when the press release was not exaggerated.
+  
+  
+The SQL code to extract this table, along with an example of the table, is presented below.  
+*note. This table is limited to 2 rows of data. To see the full table remove the last line of code:* `LIMIT 2`
+
+
+```{sql connection=db, verbatim = T}
+--// Analysis = JA > NA : Advice - Creates View004
+
+--need the following columns:
+-- Reference, Institution, Sample, Design_Actual, JA_Advice, News_Source, News_Advice, News_Advice_Exaggeration, PR_Advice_Exaggeration, 
+
+SELECT
+Reference,
+Meta_table.Institution, 
+Meta_table.Sample,
+JABody_table.Design_Actual,
+View001.JA_Advice AS JA_Advice,
+News_table.Source as News_Source,  
+News_table.Advice_Code as News_Advice, 
+CASE  
+    WHEN News_table.Advice_Code = 0 AND View001.JA_Advice = 0        THEN -99
+    WHEN News_table.Advice_Code = View001.JA_Advice                  THEN 0
+    WHEN News_table.Advice_Code > View001.JA_Advice                  THEN 1 
+    WHEN News_table.Advice_Code < View001.JA_Advice                  THEN -1 
+    ELSE 0
+END 
+News_Advice_Exaggeration,
+--- was the PR exaggerated?
+View001.PR_Advice_Exaggeration
+
+FROM
+News_table
+LEFT JOIN Meta_table USING(reference)
+LEFT JOIN JABody_table USING(reference)
+LEFT JOIN View001 USING(reference)
+LIMIT 2 --***REMOVE THIS LINE TO SEE THE FULL TABLE***
+
+```
+
+
+
+### v). The exaggeration of ***causal language*** between the JA and the News  
+*note. This table is used to create the view "View005"*  
+*To save as a view see instructions above.*
+  
+For this analysis we need to compare the highest code for causal language in the News to the study design to determine whether or not the News is exaggerated relative to the study design. We can also look at the odds of the News being exaggerated when the Press Release is, or is not, exaggerated.  
+  
+To create the data table we need to extract the following columns from the database:   
+
+| Reference^1^ | Institution^2^ | Sample^3^ | Design_Actual^4^ | News_Source^5^ | News_CaCode^6^ | News_CL_Exaggeration^7^| PR_CL_Exaggeration^8^ | 
+|------:|-----|-----|-----|-----|-----|-----|-----|
+
+
+1. Reference:
+: as above
+2. Institution:
+: as above
+3. Sample:
+: as above
+4. Design_Actual:
+: Used here to determine whether or not the language has been exaggerated relative to the study design
+5. News_Source:
+: as above
+6. News_CaCode:
+: We need to take the highest causal language code from the News title and main statement, *but* only when the title and main statement have the same IV and DV (using the variable `TMS_IVDV_Same`). If they do not refer to the same IV and DV use the the main statement. This variable is calculated in the temporary table `t1` using `WITH` and `MAX`
+7. News_CL_Exaggeration:
+: Was the language used in the news exaggerated relative to the study design? 
+  
+To answer this question we follow the recommendations from [Adams et al.](https://www.ncbi.nlm.nih.gov/pubmed/27808530) (see above). 
+
+This variable needs to be calulated using `CASE` and `WHEN` with the rules below.
+  
+  
+**Rules for calculating whether or not the News is exaggerated relative to the study design **
+  
+**IF** Study Design = 0 (qualitative) **THEN** -99 (not applicable - does not apply to causality)  
+**IF** Study Design = 8 (mixed methods) **THEN** -99 (not applicable - cannot determine which statement relates to what method)  
+**IF** News Causal Language = 0 **THEN** -99 (not applicable - no cause mentioned)  
+**IF** News Causal Language = 1 **THEN** -99 (not applicable - mentions no cause/ difference)  
+**IF** News Causal Language = -9 **THEN** -99 (not applicable - IV and DV not mentioned)   
+  
+**IF** News Causal Language = 2,3 OR 4 AND Study Design = 1, 2, 3, 5 OR 6 **THEN** 0 (not exaggerated)  
+**IF** News Causal Language = 5 OR 6 AND Study Design = 4, 7 OR 9 **THEN** 0 (not exaggerated)  
+**IF** News Causal Language = 5 OR 6 AND Study Design = 1, 2, 3, 5 OR 6 **THEN** 1 (exaggerated)  
+**IF** News Causal Language = 2,3 OR 4 AND Study Design = 4, 7 OR 9 **THEN** -1 (understated)
+  
+8. PR_CL_Exaggeration:
+: Was the Press Release exaggerated? We want to know the odds that the news articles were exaggerated when the press release was also exaggerated versus when the press release was not exaggerated.
+ 
+
+The SQL code to extract this table, along with an example of the table, is presented below.  
+*note. This table is limited to 2 rows of data. To see the full table remove the last line of code:* `LIMIT 2`
+  
+```{sql connection=db, verbatim = T}
+--/// Analysis = JA > NA : Causal language - View005
+
+-- need columns: Reference, Institution, Sample, Design_Actual, News_Source, News_CaCode, News_CL_Exaggeration, PR_CL_Exaggeration
+
+-- need a tmp table for the news causal statement, highest (title of MS) when IV & DV same, otherwise from MS only
+
+WITH
+t1 AS
+(
+SELECT Reference,
+    News_table.Source, -- have to include source in both tables so that (Reference, Source) acts as a unique identifier between the two tables.
+    News_table.Title_Code,
+    News_table.MS_Code,
+    News_table.TMS_IVDV_Same,
+CASE 
+    WHEN News_table.TMS_IVDV_Same = 1  THEN MAX(News_table.Title_Code, News_table.MS_Code)
+    WHEN News_table.TMS_IVDV_Same = 0  THEN News_table.MS_Code
+    END
+    News_CaCode
+    
+    FROM News_table
+    )
+    
+SELECT
+Reference,
+Meta_table.Institution, 
+Meta_table.Sample,
+JABody_table.Design_Actual, 
+News_table.Source as News_Source,
+-- statement of cause from news (taken from temporary table above)
+t1.News_CaCode as News_CaCode,
+
+--- is the news exaggerated relative to the study design (Adams et al coding)
+CASE
+   WHEN JABody_table.Design_Actual IN (0,8)                                     THEN -99
+   WHEN t1.News_CaCode IN (0,1,-9)                                              THEN -99
+   WHEN JABody_table.Design_Actual IN (1,2,3,5,6) AND t1.News_CaCode IN (2,3,4) THEN 0
+   WHEN JABody_table.Design_Actual IN (4,7,9)     AND t1.News_CaCode IN (2,3,4) THEN -1
+   WHEN JABody_table.Design_Actual IN (1,2,3,5,6) AND t1.News_CaCode IN (5,6)   THEN 1
+   WHEN JABody_table.Design_Actual IN (4,7,9)     AND t1.News_CaCode IN (5,6)   THEN 0
+   END
+   News_CL_Exaggeration,
+   
+View002.PR_CL_Exaggeration   
+   
+FROM
+News_table
+LEFT JOIN Meta_table USING(Reference)
+LEFT JOIN JABody_table USING(Reference)
+LEFT JOIN View002 USING(Reference)
+LEFT JOIN t1 USING(Reference, Source) -- note this has to be joined using Source as well because Reference alone cannot tell SQL what is the relation between t1' s rows and News_table' s rows because both tables have several occurences of the same Reference. The Source with the Reference makes the News unique.
+
+LIMIT 2 --***REMOVE THIS LINE TO SEE THE FULL TABLE***
+
+```
+
+### vi). The exaggeration of ***sample*** between the JA and the news  
+ 
+*note. This table is used to create the view "View006"*  
+*To save as a view see instructions above.*
+  
+For this analysis we need to compare the sample code in the News to the actual sample to determine whether or not the News is exaggerated. We can also look at the odds of the News being exaggerated when the Press Release is, or is not, exaggerated.  
+  
+To create the data table we need to extract the following columns from the database: 
+  
+| Reference^1^ | Institution^2^ | Sample^3^ | Design_Actual^4^ | Actual_Sample^5^ | News_Source^6^| News_Sample^7^ | News_Sample_Exaggeration^8^ | PR_Sample_Exaggeration^9^ |
+|------:|-----|-----|-----|-----|-----|-----|-----|-----|
+ 
+ 
+1. Reference:
+: as above
+2. Institution:
+: as above
+3. Sample:
+: as above
+4. Design_Actual:
+: Can be used to separate data according to study design
+5. Actual_Sample:
+: What samle was used in the study (1= explicit human, 2 = implicit human, 3 = non-human, 4 = mixed)?
+6. News_Source:
+: as above
+7. News_Sample:
+: What sample was reported in the news article (1= explicit human, 2 = implicit human, 3 = non-human, 4 = mixed)?
+8. News_Sample_Exaggeration:
+: Is the sample in the News the same as the actual sample used (0 = no exaggeration), or has it been exaggerated (1) or understated (-1). This variable needs to be calulated using `CASE` and `WHEN` with the rules below.
+
+**Rules for calculating whether or not the News is exaggerated relative to the actual sample **
+  
+**IF** News Sample = 4(mixed sample) **THEN** -99 (not applicable - cannot determine which statement relates to which sample)  
+**IF** News Sample = 1 OR 2 AND JA Sample = 1 **THEN** 0 (not exaggerated)  
+**IF** News Sample = 3 AND JA Sample = 3 **THEN** 0 (not exaggerated)  
+**IF** News Sample = 1 OR 2 AND JA Sample = 3 **THEN** 1 (exaggerated)  
+**IF** News Sample = 3 AND JA Sample = 1 **THEN** -1 (understated)  
+
+
+9. PR_Sample_Exaggeration:
+: Was the Press Release exaggerated? We want to know the odds that the news articles were exaggerated when the press release was also exaggerated versus when the press release was not exaggerated.
+  
+  
+The SQL code to extract this table, along with an example of the table, is presented below.  
+*note. This table is limited to 2 rows of data. To see the full table remove the last line of code:* `LIMIT 2`
+  
+  
+```{sql connection=db, verbatim = T}
+
+--/// Analysis = JA > NA : Sample - View006
+
+-- need columns: Reference, Institution, Sample, Design_Actual, Actual_Sample, News_Source, News_Sample, News_Sample_Exaggeration, PR_Sample_Exaggeration
+
+SELECT
+Reference,
+Meta_table.Institution, 
+Meta_table.Sample,
+JABody_table.Design_Actual, 
+JABody_table.Sample_Actual as Actual_Sample,
+News_table.Source as News_Source,
+News_table.Sample_Code as News_Sample,
+--- was the news exaggerated relative to the actual Sample?
+CASE
+    WHEN News_table.Sample_Code IN (1,2) AND JABody_table.Sample_Actual IN (1,2) THEN 0
+    WHEN News_table.Sample_Code IN (1,2) AND JABody_table.Sample_Actual = 3      THEN 1
+    WHEN News_table.Sample_Code =3       AND JABody_table.Sample_Actual = 3      THEN 0
+    WHEN News_table.Sample_Code =3       AND JABody_table.Sample_Actual IN (1,2) THEN -1
+    WHEN News_table.Sample_Code =4       OR JABody_table.Sample_Actual =4        THEN -99
+END
+News_Sample_Exaggeration,
+
+--- was the PR sample exaggerated compared to Actual sample??
+View003.PR_Sample_Exaggeration
+
+FROM
+News_table
+LEFT JOIN Meta_table USING(reference)
+LEFT JOIN JABody_table USING(reference)
+LEFT JOIN View003 USING(reference)
+
+LIMIT 2 --***REMOVE THIS LINE TO SEE THE FULL TABLE***
+
+```
+
