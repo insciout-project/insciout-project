@@ -1,0 +1,56 @@
+---
+title: "Inventory of the columns"
+author: "Provided by the InSciOut Team"
+
+output:
+  html_document:
+theme: journal
+highlight: pygment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(knitr)
+library(dplyr)
+```
+
+
+
+``` {r include=FALSE}
+library(DBI)
+db <- dbConnect(RSQLite::SQLite(), dbname = "C:/Users/Rachel/Google Drive/Insciout Project/The TRIAL/Information for Geoffrey/InSciOut Project/database/InSciOut.db")
+```
+
+![](img/logo1.png)  
+  
+    
+  
+    
+The Columns of the PR table, JA table and News table are exactly the same. They represent the rows of the excel coding spreadsheets; with some more columns, such as `Source_Category`. 
+
+The inventory is provided below detailing:
+
+| Section^1^ | Explanation^2^ | Location^3^ | Column Name^4^ |
+|:-----|-----|-----|-----|
+
+
+1. Section:
+: Section refers to the section of the excel Coding Sheet
+2. Explanation:
+: Most explanations are taken directly from the excel Coding Sheet
+3. Location:
+: Cell locations or rows from the excel Coding Sheet are included where possible
+4. Column Name:
+: This is the name of the variable provided in the InSciOut Database
+
+A csv copy of this table can also be found here: [*** to insert location***]
+
+
+```{r}
+columns <- read.csv("../Column Names.csv")
+names(columns) <- c("Section", "Explanation (coding sheet)", "Location (coding sheet)", "Column Name")
+
+kable(columns[0:dim(columns)[1],]) 
+```
+
