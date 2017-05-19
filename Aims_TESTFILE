@@ -1,6 +1,0 @@
-SELECT
-Meta_table.Institution,
-Meta_table.Sample
-
-FROM
-Meta_table
