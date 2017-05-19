@@ -178,36 +178,6 @@ LEFT JOIN JATitle_table USING(Reference) -- we JOIN the JATitle_table using the 
 LIMIT 2 --***REMOVE THIS LINE TO SEE THE FULL TABLE***
 ```
 
-
-#### **Making A View** 
- 
-You can transform any SQL query that extracts a table from the database into a `View`.
-
-A `View` is:
-
-  - a virtual table defined by a SQL query
-  - accessible as a usual table,
-  - stored in the database
-  - not using much memory (that is just a SQL query).
-  - updated whenever the other tables/views get updated.
-  - easy to create with SQLiteStudio.
-  
-Next to each `View`, we recommend that you save the SQL query related to this view in a text file next to the database (e.g. `view001.sql` to make it recognizable) - use 'Save SQL to file' button or `Ctrl` + `s` and remember to use '.sql' as an extension. You should be saving your queries **regularly** anyway when writing them up. This will avoid losing your work in case of a software crash. And even better: it will avoid losing all the views in case of a database corruption.
-
-Optionally, you will also be able to export any `View` into a CSV file with the button 'export Results'.
-
-
-The simplest way to make a view is to use SQLiteStudio as it is a GUI. 
-
-  - Click on `Tools` then `Open SQL Editor` or press `ALT` + `E`. 
-  - Write the query to make the table you want, or copy-paste the query from Atom/Rstudio.
-  - Click on the 'Start/Play' button or press `F9` to run the query and check that you obtain what you want. 
-  - When you are done, click on 'Create View from Query' (this looks like a blue square with a yellow lightening bolt through it).
-  
-Your table should now appear as a new view in the database.
-
-
-
   
 ### ii) Using Atom
 
@@ -253,6 +223,34 @@ The `connection=db` uses `db` to connect R to the database. Each chunk code that
   
 ## 3. How to extract relevant data tables using SQL
 
+### **Making A View** 
+ 
+You can transform any SQL query that extracts a table from the database into a `View`.
+
+A `View` is:
+
+  - a virtual table defined by a SQL query
+  - accessible as a usual table,
+  - stored in the database
+  - not using much memory (that is just a SQL query).
+  - updated whenever the other tables/views get updated.
+  - easy to create with SQLiteStudio.
+  
+Next to each `View`, we recommend that you save the SQL query related to this view in a text file next to the database (e.g. `view001.sql` to make it recognizable) - use 'Save SQL to file' button or `Ctrl` + `s` and remember to use '.sql' as an extension. You should be saving your queries **regularly** anyway when writing them up. This will avoid losing your work in case of a software crash. And even better: it will avoid losing all the views in case of a database corruption.
+
+Optionally, you will also be able to export any `View` into a CSV file with the button 'export Results'.
+
+
+The simplest way to make a view is to use SQLiteStudio as it is a GUI. 
+
+  - Click on `Tools` then `Open SQL Editor` or press `ALT` + `E`. 
+  - Write the query to make the table you want, or copy-paste the query from Atom/Rstudio.
+  - Click on the 'Start/Play' button or press `F9` to run the query and check that you obtain what you want. 
+  - When you are done, click on 'Create View from Query' (this looks like a blue square with a yellow lightening bolt through it).
+  
+Your table should now appear as a new view in the database.
+
+### List of Views
 
 The data tables extracted in this tutorial are for the following analyses:  
 
