@@ -1,5 +1,6 @@
 # InSciOut Project
 
+I added documenation.
 Here you will write an introduction to the repository. 
 You may want to:
  - explain what is the project about,

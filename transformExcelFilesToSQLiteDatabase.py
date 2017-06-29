@@ -46,7 +46,8 @@ for ifolder, folder_name in enumerate(folder_names):
             continue
         df = sheet.parse(0, header=None)
         # print filepath
-        # print metadata_table
+
+        # EXTRACT DATA FROM EXCEL SPREADSHEET:
         metadata_sheet = df.iloc[0:8, 0:2]
         # Sample, Institution, Source_Category and Source are not in the spreadsheet, hence the -4
         metadata_table.loc[i, :-3] = metadata_sheet.iloc[:, 1].values
@@ -62,10 +63,10 @@ for ifolder, folder_name in enumerate(folder_names):
         data_table[data_columns[0]].iloc[0:2] = 'PR'
         data_table[data_columns[0]].iloc[2:4] = 'JA' # those rows are still here (as we only filter after)
         data_table.columns = data_columns # mandatory to make append
-        data_table = data_table[1:]
+        data_table = data_table[1:] # FIXME: THIS LINE REMOVE THE DRAFT PRESS RELEASE, IT IS NORMAL?? if not what was its aim?
 
         # SUSPICION TESTS:
-        # we try to keep only the rows that contain something!
+        # --> we try to keep only the rows that contain something!
         filling_filter = data_table.isFilled == 1
         secondary_filter = ~pd.isnull(data_table.IV)
         if any(filling_filter != secondary_filter):
@@ -76,6 +77,23 @@ for ifolder, folder_name in enumerate(folder_names):
         # whatever the results we don't take the risk of taking suspicious Sources
         # we try to keep only the row that contains something!
         data_table = data_table[data_table.isFilled == 1]
+
+        # --> we test whether SDI_Statement was filled correctly
+        d = data_table.ix[data_table["Source"] == "Final Press Release", :]
+        if len(d) > 0:
+            if (d["SDI_Design"].iloc[0] > 0) and (d["SDI_Cause"].iloc[0] > 0):
+                if not isinstance(d["SDI_Statement"].iloc[0], basestring):
+                    print "--\nWARNING: In Excel File {}, in Final Press Release, SDI_Statement should a String when SDI_Design > 0 AND SDI_Cause > 0'.\n--" \
+                        .format(filepath)
+            else:
+                if not d["SDI_Statement"].iloc[0] == 0:
+                    print "--\nWARNING: In Excel File {}, in Final Press Release, SDI_Statement should be 0 when either SDI_Design <= 0 or SDI_Cause <= 0'.\n--" \
+                        .format(filepath)
+        else:
+            print "--\nWARNING: In Excel File {} does not contain a Final Press Release.\n--" \
+                .format(filepath)
+
+        # EXTRACT METADATA AND ADD THE DATA TO BIG TABLE:
         # we include the metadata reference in the data.
         # to do so we simple repeat the metadata (last row of metadata_table) to fill the data table
         rep_metadata = pd.DataFrame(data=[metadata_table['Reference'].iloc[-1]] * len(data_table),

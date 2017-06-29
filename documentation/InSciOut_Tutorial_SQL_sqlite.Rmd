@@ -1,0 +1,641 @@
+---
+title: "InSciOut SQL / SQLite tutorial"
+author: "Geoffrey MÃfÂ©gardon"
+date: "4 March 2017"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float: yes
+theme: journal
+highlight: pygment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(knitr)
+library(dplyr)
+```
+
+
+## Introduction
+
+### Quick explanation about this file
+To create SQLite database is easy with pandas/python.
+And to access the database from Rmardown, that I used to write this HTML file, is pretty easy too:
+```{r}
+library(DBI)
+db <- dbConnect(RSQLite::SQLite(), dbname = "../database/InSciOut.db")
+```
+We can now use `db` to connect R to the database (see the Rmd file to see it used).
+Basically, each cell of code that follows starts with `{sql connection=db}` to tell R to use `db` for the SQL query I am writing.
+
+### Content of the SQL database
+Please note that now, the database divides the data into four `Root Tables`:
+
+1. the PR table,
+: contains all the data from Press Releases. It is the concatenation of the content from E7 to E55 across all excel spreadsheets and all samples. Note that the rows of the table corresponds to one Press Release. Hence, the columns of the table correspond to the rows in the excel spreadsheet.
+
+2. the JA table, 
+: contains all the data from Journal Articles. It is the concatenation of the content from [F:G, 7:55] across all excel spreadsheets and all samples. Hence, both the columns "Journal Article - Title and Abstract" and "Journal Article - Body" are contained.
+
+3. the News table,
+: contains all the data from News. It is the concatenation of the content from [H:AV, 7:55] across all excel spreadsheets and all samples. Note that only the news paper that have been filled are kept. 
+
+4. the Meta table.
+: contains the meta information for the Press Releases and related Articles and News.  It is the concatenation of the content from [A:B, 1:8] across all excel spreadsheets and all samples.
+
+> Note that every table contains a column `Reference` that contains the reference number for each entry/row. This unique identifier is unique for every PR and should have the following nomenclature: `[Sample]-[Institution]-[Year]-[Number]`
+  
+This division of the information into four tables will allow us to cross easily the information between Meta, PR, JA and News. To cross information between several tables is called a `MERGE` or `JOIN` operation, which is at the core of `SQL` and modern data manipulation libraries (R, Python, MATLAB)
+  
+The database comes also, for now, with two views:
+
+1. the JABody table
+: returns the rows of the JA_table that come from the article's body,
+
+2. the JATitle table
+: returns the rows of the JA_table that come from the Abstrat and/or Title of the article.
+  
+A `view` as we will see below is a virtual table that is generated from the actual table in the database. These virtual tables can be used as if there are actual table.
+
+Here is a preview of each some of the tables:
+
+1. META_table (note that we pass the `db` to Rmarkdown connection)
+
+    ```{sql connection=db}
+SELECT * FROM Meta_table
+LIMIT 1
+
+```
+
+2. JA_table
+    ```{sql connection=db}
+SELECT * FROM JABody_table
+LIMIT 1
+
+```
+3. PR_table 
+    ```{sql connection=db}
+SELECT * FROM PR_table
+LIMIT 1
+
+```
+4. News_table (note that there are several News with the same `Reference`)
+    ```{sql connection=db}
+SELECT * FROM News_table
+LIMIT 2
+
+```
+
+### Inventory of the Columns
+
+The Columns of PR, News and JA are exactly the same at the moment. They are essentially representing the Rows of the excel spreadsheets; with some more columns, such as `Source_Category`. You can find the correspondance of each column in the file `Column Names.xlsx` (don't delete the `.csv` version though).
+
+```{r}
+columns <- read.csv("../Column Names.csv")
+names(columns) <- c("Section", "Explanation (from excel)", "Column Name")
+
+kable(columns[11:dim(columns)[1],]) # from row 11 to end of file Column Names
+```
+
+
+
+
+
+
+## Access and Manipulate your database 
+
+### with SQLiteStudio
+
+It is a GUI to manage your database. It help you creating new tables, new views (see below), exploring and querying your data.
+![](./img/SQLiteStudio.png)
+
+Although, it is very cool, I experimented a crash with SQLiteStudio that made me have to re-write some code. 
+To be safe, we need to save our changes **regularly** in SQLiteStudio -- after each important changes. 
+Alternatively I would recommend to use Atom or RStudio as a SQL editor while having SQLiteStudio open to check the content of the database. Once your SQL query is giving the table you want (don't forget to save regularly as well), you will copy paste the code to SQLiteStudio.
+
+In SQLiteStudio, go to `Database` -> `Connect to Database` and select the database on your hardrive. Then, press `ALT` + `E` to open the SQL editor. You can also explore the database. Press `F9` to run the SQL query.
+
+### with Atom
+
+Atom is a modern text and code editor. It is very modular and it is easy to install a SQL plugin.
+
+![](./img/Atom.png)
+
+In Atom, you need to install the following packages from the package menu:
+- quick-query
+- quick-query-sqlite
+
+Then, make a new file. Press `ALT` + `\` to open the database explorer. Click the "+" tab to open the data base. Note that you'll need to select `SQLite` in the list `protocol`. Now, you are ready to write some SQL queries. Click the `Play` button to run your SQL query. You can also press `F5` to run the query.
+
+### with Rstudio
+
+Rstudio is the most common IDE for R. Thankfully, it knows SQL too.
+
+![](./img/RStudio.png)
+
+In Rstudio, the simplest is to create a `RMarkdown` document, which is what I am writing with at the moment. You will get an example document, remove what you don't need and then copy-paste the following:
+
+```
+{r}
+library(DBI)
+db <- dbConnect(RSQLite::SQLite(), dbname = "../database/InSciOut.db")
+```
+
+With ``` surrounding the block of code to form a **chunk of code** that can be run.
+
+The above chunk of code is in R, which is told by `{r}`. It creates a connection to the database, which we call `db`.
+
+Then you can make any query using this kind of chunk:
+```
+{sql connection=db, verbatim = T}
+SELECT * FROM Meta_table
+LIMIT 1
+
+```
+With ``` surrounding the block of code.
+
+The above chunk of code is in SQL, which is told by `{sql}`.
+The `connection=db` uses `db` to connect R to the database. Each chunk code that follows starts with `{sql connection=db}` to tell R to use `db` for the SQL query I am writing.
+
+
+## Table generation workflow
+
+### Choose between R and SQL
+
+Here, we will be using SQL to generate the tables that we need for each analysis in InsciOut. We could use R, but it is a bit less friendly for people who don't program often with R. The advantage of SQL for us is that the template to generate tables will be clear and well organised in sections.
+
+### Make A View for each Analysis
+
+You can transform any SQL query that extract a table from the database into a `View`.
+What is a view?
+
+A `View` is:
+
+  - a virtual table defined by a SQL query
+  - accessible as an usual table, (so that your can access view100 from view125)
+  - stored in the database
+  - not using much of memory (that is just a SQL query).
+  - updated whenever the other tables/views get updated.
+  - easy to create with SQLiteStudio.
+  
+Next to each `View`, I would recommend to save the SQL query related to this view in a text file next to the database (e.g. `view100.sql` to make it recognizable). You should be saving your queries **regularly** anyway when writting them up. This will avoid loosing your work in case of a software crash. And even better: it will avoid loosing all the views in case of a database corruption.
+
+Optionnaly, you will also be able to export any `View` into a CSV file.
+
+Hence, for each analyse/table that is described in the file `Data Analysis.xls`, it seems a good idea to create a `View` directly in our SQL database. Like that everything is at one place.
+
+
+### How to make a View
+
+The simplest way is to use SQLiteStudio as it is a GUI. 
+
+  - Click on `Tool` then `Open SQL Editor`. 
+  - Write -- or copy-paste the query from Atom/Rstudio -- that makes the new table you want. 
+  - Click on the 'Start/Play' button to test that you obtain what you want. 
+  - When you are done, click on 'Create View from Query' 
+  
+Bim! your table appears now as a new view in the database.
+
+Note that you can save your SQL query in a text file (please use '.sql' as extension, to keep it obvious) with the 'Save SQL to file' button (shortcut CTRL+S). You can also export the view/table in a CSV file with the button 'export Results'.
+
+
+## Analysis 125
+
+A view 'view 125' will be created for analysis 125. We use analysis 125 as a first example because of its simplicity.
+
+### What we want to do
+
+We use the analysis explained in row 125 in ```Data Analysis.xls```.
+We want to obtain a table that contains the columns:
+
+| Sample^1^ | Institution^2^ | Reference^3^ | JA_Design^4^ | PR_Advise^5^ | News_Source^6^ | News_Advices^7^ | News_Exageration^8^ | PR_Exageration^9^ | 
+|------:|-----|-----|-----|-----|-----|-----|-----|-----|
+
+1. Sample:
+: take column `Sample` when (Source == "News")
+2. Institution:
+: take column `Institution` when (Source == "News")
+3. Reference (PR number):
+: take column `Reference` when (Source == "News")
+4. JA_Design:
+:     take column `Design_Actual` when (Source == "Journal Article - Body")
+5. PR_Advise:
+:     take column `Advice_Code` when (Source == "Final Press Release")
+
+> **!WARNING!** note that in the document you speak about the JA - Body but   you cite cell E40, which correspond to PR
+
+6. News_Source
+:      take column `Source` when (Source_Category == "News")
+7. News_Advise
+:      take column `Advice_Code` when (Source_Category == "News")
+8. News_Exageration
+: Operation on **this** table:
+      + 1 if `News_Advice` > `PR_Advice`
+      + 0 if `News_Advice` = `PR_Advice`
+      + -1 if `News_Advice` < `PR_Advice`
+9. PR_Exageration
+:      to take from Analysis 100 (a100)
+
+> **!WARNING!** note that this last column needs input from Analysis 100
+
+### Use SELECT and FROM
+
+Essentially, for most queries, if all the information you need can be easily extracted from the existing tables and views, you will only need a `SELECT` and a `FROM` section.
+
+The `SELECT` section is to select the columns that you want to display, and/or create new columns that are simple operations between **existing columns**. The `FROM` section should list all the tables from which you are selecting the columns. These tables needs to be merged with a `JOIN` operation. To ensure a relevant correspondance between the rows of each table, they are joined `USING` their `Reference` number.
+
+Ok, an example will be much clearer. Open the editor in SQLiteStudio and write the following code.
+
+```{sql connection=db}
+SELECT
+-- // 'Select the following columns ...'
+Reference,  
+Meta_table.Institution, 
+Meta_table.Sample,  
+JABody_table.Design_Actual,  
+News_table.Source as News_Source,  
+PR_table.Advice_Code as PR_Advice, 
+News_table.Advice_Code as News_Advice, 
+CASE  
+    WHEN News_table.Advice_Code > PR_table.Advice_Code THEN 1 
+    WHEN News_table.Advice_Code < PR_table.Advice_Code THEN -1 
+    ELSE 0
+END News_Exageration, 
+A100.PR_Exageration  
+
+-- // 'From the following merged tables:'
+FROM 
+News_table 
+LEFT JOIN JABody_table USING(Reference) 
+LEFT JOIN Meta_table USING(Reference) 
+LEFT JOIN PR_table USING(Reference) 
+LEFT JOIN A100 USING(Reference) 
+
+```
+
+Note that:
+
+  - with `SELECT`, you select the columns you want to have,
+  - you can select any columns from any table that is written under the keyword `FROM`,
+  - the previous point means also that all the tables you used in the `SELECT` section need to be listed under the keyword `FROM`,
+  - `Meta_table.Sample` select the column `Sample` of the table `Meta_table`,
+  - with `as`you can created aliases for the column names (i.e. you can rename the columns)
+  - `CASE / WHEN / END` is used to make a 'new column' that is given a value based on conditions between other **existing** columns,
+  - `CASE / WHEN / END` **cannot** test a condition between aliases or 'new columns'
+  (we will see how to walk around that in Analysis 100, below)
+  - when using `CASE / WHEN / END` you need to give a name to the column that you created. This name (here `News_Exageration`) comes after the keyword `END`.
+  - the `LEFT JOIN` operation is the same as in python/R, we merge the tables using the column `Reference` as a reference/key (note the keyword `USING()`)
+  - we are using the view `JABody_table` (that I made) instead of `JA_table` to get only one row per JA. This view queries `sql SELECT * FROM JA_table WHERE JA_table.Source = Journal Article - Body')`
+  - we are accessing the `PR_Exageration` in the view `A100`, which is from Analysis 100 (below),
+  - **WATCH OUT: ** if you code does not work, the first thing to check is whether you forget a comma. Or put one where there is none.
+  
+
+  
+### R equivalent
+
+I don't know what you think but it looks quite simpler than the R code that we used from extracting 'table 125':
+
+```{r eval=FALSE}
+# --- Analysis at row 125 in DataAnalasis.xls ----
+db <- dbConnect(RSQLite::SQLite(), dbname = "../database/InSciOut.db")
+news_table <- dbGetQuery(db, "SELECT Reference, Source, Advice_Code FROM News_table")
+JA_table <- dbGetQuery(db, "SELECT Reference, Design_Actual FROM JABody_table")
+PR_table <- dbGetQuery(db, "SELECT Reference, Advice_Code, Sample_Code FROM PR_table")
+Meta_table <- dbGetQuery(db, "SELECT Reference, Sample FROM Meta_table")
+
+### Create a Table that Crosses Information between JA, PR and News tables ----
+# merge the PR Table to the News table
+setnames(news_table, 
+         old = c('Advice_Code','Source'), 
+         new = c('News_Advice_Code','News_Source'))
+setnames(PR_table, 
+         old = c('Advice_Code'), 
+         new = c('PR_Advice_Code'))
+
+d125 <- merge(x = news_table, y = PR_table, by='Reference', all.x = TRUE)
+
+# merge the JA Table to the Result Table:
+setnames(JA_table, old = c('Design_Actual'), new = c('JA_Design'))
+d125 <- merge(x = d125, y = JA_table, by='Reference', all.x = TRUE)
+
+### Add New Columns To Our Table based on its Current Columns ----
+isNewsGreater <- d125$News_Advice_Code > d125$PR_Advice_Code
+d125$News_Exageration = ifelse(isNewsGreater, 1, -1)
+
+isNewsEqual = d125$News_Advice_Code == d125$PR_Advice_Code
+d125$News_Exageration[isNewsEqual] <- 0
+
+### Add New Columns based on Older Analysis
+d100 <- read.csv("./d100.csv", stringsAsFactors = F)
+sub.d100 <- d100 %>%
+  select(Reference, PR_Exageration)
+
+d125 <- left_join(x = d125, y = sub.d100, by='Reference')
+
+# save and display the first 10 rows:
+write.csv(d125, "./d125.csv")
+head(d125, 10)
+
+```
+
+
+## Analysis 100
+
+### What we want to do
+
+We use the analysis explained in row 100 in ```Data Analysis.xls```.
+We want to obtain a table that contains the columns:
+
+| Sample^1^ | Institution^2^ | Reference^3^ | JA_Design^4^ | JA_Actual_Sample^5^ | JA_Sample^6^ | PR_Sample^7^ | PR_Exageration^8^ | News_Uptake^9^ | Total_News^10^
+|------:|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+
+We want one row per PR.
+
+1. Sample:
+: take column `Sample` when (Source == "PR")
+2. Institution:
+: take column `Institution` when (Source == "PR")
+3. Reference (PR number):
+: take column `Reference` when (Source == "PR")
+4. JA_Design:
+:     take column `Design_Actual` when (Source == "Journal Article - Body")
+5. JA_Actual_Sample:
+:     take column `Sample_Actual` when (Source == "Journal Article - Body")
+
+> **!WARNING!** note that in the document you speak about the JA - Body but   you cite cell E40, which correspond to PR
+
+6. JA_Sample
+:      take minimum of `Sample_Code` between Source == "Journal Article - Body" and Source == "Journal Article - Title and Abstract". Or, when grouping by JA and Reference, we keep the minimum.
+
+7. PR_Sample
+:      take column `Sample_Code` when (Source_Category == "PR")
+
+> **!WARNING!** you refer to G29 in the spreadsheet, but I think that you meant E28
+
+8. PR_Exageration
+: Operation on **this** table:
+      + **IF PR_Sample is 4,** 
+      the exaggeration/understated column should read **-99**
+      + **IF PR_Sample is 1 OR 2 AND JA_Sample is 1;** 
+      the exaggeration/understated column should read **0** (i.e. correct)
+      + **IF PR_Sample is 1 OR 2 AND JA_Sample is 3;** 
+      the exaggeration/understated column should read **1** (i.e. exaggerated)
+      + **IF PR_Sample is 3 AND JA_Sample is 3;** 
+      the exaggeration/understated column should read **0** (i.e. correct)
+      + **IF PR_Sample is 3 AND JA_Sample is 1;** 
+      the exaggeration/understated column should read **-1** (i.e. understated)
+
+> **!WARNING!** wasn't there an easier way to encode your data? that seems very complicated. Why should `PR_Sample > JA_Sample` not work here?
+
+9. News_Uptake
+:      if there any news articles attached to the PR reference `Reference`
+
+10. Total_News
+:     if yes, how many news articles for each PR
+
+### More Complicated than Analysis 125?
+
+Analysis 100 is a bit more complicated because we need to created:
+  
+  - a new column `JA_Sample_Code` based on `MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code)` 
+  - a new column `PR_Exageration` based on the above new column `JA_Sample_Code`
+
+We could keep the same template as above. However, as SQL does not allow to reuse the new column in a new column, so we would need to repeat some of our code (such as the `MIN()` operation):
+
+```{sql connection=db, eval=FALSE}
+SELECT -- Select the columns you want to have:
+  MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code) as JA_Sample_Code,
+  PR_table.Sample_Code as PR_Sample_Code,
+  CASE
+      WHEN PR_table.Sample_Code IN (1,2) AND MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code) = 1 THEN 0
+      WHEN PR_table.Sample_Code IN (1,2) AND MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code) = 3 THEN 1
+      WHEN PR_table.Sample_Code = 3      AND MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code) = 3 THEN 0
+      WHEN PR_table.Sample_Code = 3      AND MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code) = 1 THEN -1
+      WHEN PR_table.Sample_Code = 4                             THEN -99
+  END
+  PR_Exageration
+FROM PR_table
+LEFT JOIN JATitle_table USING(Reference)
+LEFT JOIN JABody_table USING(Reference)
+```
+
+That `SELECT` section just looks uggly. Fortunately, with the keyword `WITH`, SQL can create/query temporary tables, that we will be able to use in the `SELECT` section. 
+
+### Use WITH to store MIN() result in a temporary table and avoid repetitive code
+
+Thanks to `WITH` keyword, we can query a temporary table - that we will call `t1` -- that contains `MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code)`, with a reference `Reference`. This will make the `SELECT` section easier to read.
+
+We want `t1` will look like that:
+
+```{sql connection=db}
+SELECT
+      Reference, -- we will need it
+      MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code) as JA_Sample_Code,
+      PR_table.Sample_Code as PR_Sample_Code
+FROM JABody_table -- list all the tables you used in SELECT
+LEFT JOIN JATitle_table USING(Reference)
+LEFT JOIN PR_table USING(Reference)
+
+```
+
+Now we use `WITH` to give it a name (`t1`) and allow us to call it in the `SELECT` section:
+
+```{sql connection=db}
+WITH -- Create temporary tables that makes SELECT easier
+  t1 AS -- makes things easier for the CASE / WHEN below
+    (
+    SELECT
+      Reference, -- we will need it
+      MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code) as JA_Sample_Code,
+      PR_table.Sample_Code as PR_Sample_Code
+    FROM JABody_table -- list all the tables you used in SELECT
+    LEFT JOIN JATitle_table USING(Reference)
+    LEFT JOIN PR_table USING(Reference)
+    )
+
+SELECT -- Select the columns you want to have:
+  Reference,
+  t1.JA_Sample_Code as JA_Sample_Code,
+  t1.PR_Sample_Code as PR_Sample_Code,
+  CASE
+      WHEN t1.PR_Sample_Code IN (1,2) AND t1.JA_Sample_Code = 1 THEN 0
+      WHEN t1.PR_Sample_Code IN (1,2) AND t1.JA_Sample_Code = 3 THEN 1
+      WHEN t1.PR_Sample_Code = 3      AND t1.JA_Sample_Code = 3 THEN 0
+      WHEN t1.PR_Sample_Code = 3      AND t1.JA_Sample_Code = 1 THEN -1
+      WHEN t1.PR_Sample_Code = 4                                THEN -99
+  END
+  PR_Exageration -- here, you give a name to the new column
+
+FROM -- list ALL the tables used in SELECT (even the temporary)
+t1
+
+```
+
+Ok, that may look a bit longer than without `WITH`, but the `SELECT` section is much prettier.
+
+### Use WITH to store news count in a temporary table
+
+We will also create a temporary table `NewsCount` in the `WITH` section. Basicaly, we need to count the number of row in `News_table` for each `Reference`. With `GROUP BY Reference` we can `COUNT` the number of row for each `Reference`:
+
+```{sql connection=db}
+WITH -- Create temporary tables that makes SELECT easier
+  NewsCount AS 
+    (
+    SELECT Reference, COUNT() as Count 
+    FROM News_table 
+    GROUP BY Reference
+    )
+
+SELECT -- Select the columns you want to have:
+  Reference, 
+  CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN 'yes' ELSE 'no'
+  END 
+  News_Uptake,
+  CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN NewsCount.Count ELSE 0
+  END 
+  Total_News 
+
+FROM -- list ALL the tables used in SELECT (even the temporary)
+PR_table
+LEFT JOIN NewsCount USING(Reference)
+
+```
+
+Good, so everything seems to work quite well.
+
+> Note that if you want to test that a cell `A` is not empty, you need to use `WHEN A IS NOT NULL`. If you were to test whether the cell `A` is different from 0, you would use `WHEN A != 0`.
+
+### Get the Final Table
+
+Ok, so let try to make the Analysis 100 now. Essentially, we just need to join the two queries that we made above using copy-paste.
+
+> Please note that you should **always** select the `Reference` number in the temporary table you query, in order to be able to join everyting at the end.
+
+> Note also that if you are going to use the table `t1` and `NewsCount` very often, you can store them into a view instead of using `WITH`. That will also make the following code shorter (no need for the `WITH` section anymore).
+
+
+```{sql connection=db}
+WITH -- Create temporary tables that makes SELECT easier
+  t1 AS -- makes things easier for the CASE / WHEN below
+    (SELECT
+        Reference, 
+        MIN(JABody_table.Sample_Code, JATitle_table.Sample_Code) as JA_Sample_Code, 
+        PR_table.Sample_Code as PR_Sample_Code
+     FROM JABody_table 
+     LEFT JOIN JATitle_table USING(Reference)
+     LEFT JOIN PR_table USING(Reference)
+    ), -- don't forget the comma
+
+  NewsCount AS -- make the LEFT JOIN clearer
+    (SELECT Reference, COUNT() as Count 
+     FROM News_table GROUP BY Reference
+    )
+
+SELECT -- Select the columns you want to have:
+  Reference, 
+  Meta_table.Institution, 
+  Meta_table.Sample, 
+  JABody_table.Design_Actual as JA_Design, 
+  JABody_table.Sample_Actual as JA_Actual_Sample, 
+  t1.JA_Sample_Code as JA_Sample_Code, 
+  t1.PR_Sample_Code as PR_Sample_Code, 
+  CASE
+      WHEN t1.PR_Sample_Code IN (1,2) AND t1.JA_Sample_Code = 1 THEN 0
+      WHEN t1.PR_Sample_Code IN (1,2) AND t1.JA_Sample_Code = 3 THEN 1
+      WHEN t1.PR_Sample_Code = 3      AND t1.JA_Sample_Code = 3 THEN 0
+      WHEN t1.PR_Sample_Code = 3      AND t1.JA_Sample_Code = 1 THEN -1
+      WHEN t1.PR_Sample_Code = 4                             THEN -99
+  END
+  PR_Exageration, 
+  CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN 'yes' ELSE 'no'
+  END 
+  News_Uptake,
+  CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN NewsCount.Count ELSE 0
+  END 
+  Total_News 
+
+FROM -- list ALL the tables used in SELECT (even the temporary)
+PR_table
+LEFT JOIN JABody_table USING(Reference)
+LEFT JOIN Meta_table USING(Reference)
+LEFT JOIN NewsCount USING(Reference)
+LEFT JOIN t1 USING(Reference)
+
+```
+
+That looks much more complicated than Analysis 125! But it is still quite clear because of a clear pattern of three sections.
+
+### R code equivalent
+
+But this is not so bad when compared to the R code:
+
+```{r eval=F}
+### --- Analysis at row 100 in DataAnalasis.xls ----
+db <- dbConnect(RSQLite::SQLite(), dbname = "../database/InSciOut.db")
+news_table <- dbGetQuery(db, "SELECT Reference FROM News_table")
+JA_table <- dbGetQuery(db, "SELECT Reference, Source, Design_Actual, Sample_Actual, Sample_Code FROM JA_table")
+PR_table <- dbGetQuery(db, "SELECT Reference, Sample_Code FROM PR_table")
+Meta_table <- dbGetQuery(db, "SELECT Reference, Sample FROM Meta_table")
+
+# Select the minim between Sample_Code from Article's Title and Article's Body
+JA_table <- JA_table %>%  
+  group_by(Reference) %>%
+  mutate(Sample_Code = min(Sample_Code)) 
+
+# remove the rows from Article's Body from JA_table with dplyr's syntax:
+JA_table <- JA_table %>%
+  filter(Source == 'Journal Article - Body')
+
+# merge the JA table to the PR table
+setnames(JA_table, 
+         old = c('Sample_Code'), 
+         new = c('JA_Sample_Code'))
+setnames(PR_table, 
+         old = c('Sample_Code'), 
+         new = c('PR_Sample_Code'))
+d100 <- merge(x = PR_table, y = JA_table, by='Reference')
+d100 <- select(d100, -Source) # remove the column 'Source'
+
+# Make columns `PR_Exageration`according to rules.
+setDT(d100) 
+d100 <- d100[(PR_Sample_Code %in% c(1,2)) & (JA_Sample_Code == 1), PR_Exageration:= 0 ]
+d100 <- d100[(PR_Sample_Code %in% c(1,2)) & (JA_Sample_Code == 3), PR_Exageration:= 1 ]
+d100 <- d100[(PR_Sample_Code == 3) & (JA_Sample_Code == 3), PR_Exageration:= 0 ]
+d100 <- d100[(PR_Sample_Code == 3) & (JA_Sample_Code == 1), PR_Exageration:= -1 ]
+d100 <- d100[(PR_Sample_Code == 4), PR_Exageration:= -99 ]
+
+# Finally we are adding the columns with the count in new_table:
+news_table <- news_table %>% 
+  group_by(Reference) %>%
+  mutate(News_Uptake = 'yes', Total_News= n()) %>%
+  filter(row_number()==1)
+
+# and we merge everything:
+d100 <- left_join(d100, news_table, by='Reference')
+d100$News_Uptake[is.na(d100$News_Uptake)] <- 'no' 
+d100$Total_News[is.na(d100$Total_News)] <- 0
+
+write.csv(d100, "./d100.csv")
+
+```
+
+The R code succeed to shorten some bit thanks to the `mutate` function and the trick that I used with `data.table` function `setDT`. However, you would need to find these tricks.
+With SQL, you won' t need to know or find a trick. There are no libraries in SQL.
+
+On the same screen and with pretty colors:
+![](./img/comparison.png)
+
+
+
