@@ -7,7 +7,7 @@ pd.set_option('precision', 5)
 
 # do we update or replace the current tables?
 REPLACE = True
-print "Macs suck!"
+
 folder_names = glob.glob("./rawdata/*/")
 # note that we could directly import the column from an excel file
 # but it seems that LibreOffice makes xls files incompatible with pandas.
@@ -42,7 +42,7 @@ for ifolder, folder_name in enumerate(folder_names):
         try:
             sheet = pd.ExcelFile(filepath)
         except:
-            print "--\nWARNING: Can't open file: " + filepath + ". It will not be included. Check if it is an encrypted/protected file.\n--"
+            print "--\nTABLE NOT INCLUDED: Can't open file: " + filepath + ". It will not be included. Check if it is an encrypted/protected file.\n--"
             continue
         df = sheet.parse(0, header=None)
         # print filepath
@@ -62,15 +62,18 @@ for ifolder, folder_name in enumerate(folder_names):
         data_table.insert(0, data_columns[0], 'News') # insert the column Source_Category
         data_table[data_columns[0]].iloc[0:2] = 'PR'
         data_table[data_columns[0]].iloc[2:4] = 'JA' # those rows are still here (as we only filter after)
+        if len(data_table.columns) < 50:
+            print 'TABLE NOT INCLUDED, the following file is lacking %i column: %s'%(50-len(data_table.columns), filepath)
+            continue
         data_table.columns = data_columns # mandatory to make append
-        data_table = data_table[1:] # FIXME: THIS LINE REMOVE THE DRAFT PRESS RELEASE, IT IS NORMAL?? if not what was its aim?
+        # data_table = data_table[1:] # FIXME: THIS LINE REMOVE THE DRAFT PRESS RELEASE, IT IS NORMAL?? if not what was its aim?
 
         # SUSPICION TESTS:
         # --> we try to keep only the rows that contain something!
         filling_filter = data_table.isFilled == 1
         secondary_filter = ~pd.isnull(data_table.IV)
         if any(filling_filter != secondary_filter):
-            print "--\nWARNING: In Excel File {}, the following Column(s) (i.e. Source) are marked as 'not filled' while it contains information. \n" \
+            print "--\nROW NOT INCLUDED: In Excel File {}, the following Column(s) (i.e. Source) are marked as 'not filled' while it contains information. \n" \
                   "{} \nThat Source won't be added unless you marked it as 'filled'.\n--"\
                 .format(filepath, data_table.Source[filling_filter != secondary_filter].values)
 
@@ -79,19 +82,16 @@ for ifolder, folder_name in enumerate(folder_names):
         data_table = data_table[data_table.isFilled == 1]
 
         # --> we test whether SDI_Statement was filled correctly
-        d = data_table.ix[data_table["Source"] == "Final Press Release", :]
-        if len(d) > 0:
-            if (d["SDI_Design"].iloc[0] > 0) and (d["SDI_Cause"].iloc[0] > 0):
-                if not isinstance(d["SDI_Statement"].iloc[0], basestring):
-                    print "--\nWARNING: In Excel File {}, in Final Press Release, SDI_Statement should a String when SDI_Design > 0 AND SDI_Cause > 0'.\n--" \
-                        .format(filepath)
+        if metadata_table['Sample'].iloc[0] == 'sample_trial':
+            d = data_table.ix[data_table["Source"] == "Final Press Release", :]
+            if len(d) > 0:
+                if (d["SDI_Design"].iloc[0] <= 0) or (d["SDI_Cause"].iloc[0] <= 0):
+                    if not d["SDI_Statement"].iloc[0] == 0:
+                        print "--\nWARNING: In Excel File {}, in Final Press Release, SDI_Statement should be 0 when either SDI_Design <= 0 or SDI_Cause <= 0'.\n--" \
+                            .format(filepath)
             else:
-                if not d["SDI_Statement"].iloc[0] == 0:
-                    print "--\nWARNING: In Excel File {}, in Final Press Release, SDI_Statement should be 0 when either SDI_Design <= 0 or SDI_Cause <= 0'.\n--" \
-                        .format(filepath)
-        else:
-            print "--\nWARNING: In Excel File {} does not contain a Final Press Release.\n--" \
-                .format(filepath)
+                print "--\nWARNING: In Excel File {} does not contain a Final Press Release.\n--" \
+                    .format(filepath)
 
         # EXTRACT METADATA AND ADD THE DATA TO BIG TABLE:
         # we include the metadata reference in the data.
