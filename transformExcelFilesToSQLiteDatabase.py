@@ -6,7 +6,7 @@ pd.set_option('display.max_rows', 20)
 pd.set_option('precision', 5)
 
 # do we update or replace the current tables?
-REPLACE = True
+REPLACE = False
 
 folder_names = glob.glob("./rawdata/*/")
 print folder_names
