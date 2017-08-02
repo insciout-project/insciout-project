@@ -6,7 +6,7 @@ pd.set_option('display.max_rows', 20)
 pd.set_option('precision', 5)
 
 # do we update or replace the current tables?
-REPLACE = False
+REPLACE = True
 
 folder_names = glob.glob("./rawdata/*/")
 print folder_names
@@ -53,10 +53,10 @@ for ifolder, folder_name in enumerate(folder_names):
         # Sample, Institution, Source_Category and Source are not in the spreadsheet, hence the -4
         metadata_table.loc[i, :-3] = metadata_sheet.iloc[:, 1].values
         metadata_table.loc[i, 'Sample'] = os.path.basename(os.path.dirname(folder_name))
-        #metadata_table.loc[i, 'Institution'] = int(metadata_table.loc[i, 'Reference'].split('-')[0])  # take 15 in 03-15-001
-        #if len(metadata_table.loc[i, 'Reference'].split('-')) > 2:  # if equals 3, it must contains the year
-        #    metadata_table.loc[i, 'Year'] = int("20" + metadata_table.loc[i, 'Reference'].split('-')[1])  # take 15 in 03-15-001
-        #metadata_table.loc[i, 'Reference'] = '-'.join([metadata_table.loc[i, 'Sample'], metadata_table.loc[i, 'Reference']])
+        metadata_table.loc[i, 'Institution'] = int(metadata_table.loc[i, 'Reference'].split('-')[0])  # take 15 in 03-15-001
+        if len(metadata_table.loc[i, 'Reference'].split('-')) > 2:  # if equals 3, it must contains the year
+            metadata_table.loc[i, 'Year'] = int("20" + metadata_table.loc[i, 'Reference'].split('-')[1])  # take 15 in 03-15-001
+        metadata_table.loc[i, 'Reference'] = '-'.join([metadata_table.loc[i, 'Sample'], metadata_table.loc[i, 'Reference']])
 
         data_table = df.iloc[6:55, 3: 48]
         data_table = data_table.transpose()
