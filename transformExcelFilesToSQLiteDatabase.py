@@ -6,6 +6,9 @@ pd.set_option('display.max_rows', 20)
 pd.set_option('precision', 5)
 
 # do we update or replace the current tables?
+# True will replace the existing table if you try to add a table with the same name
+# False will append the new entries to the existing table if you try to add a table with the same name
+# If you want to reset the database (replace the database), delete the current database or change its name (to back it up). 
 REPLACE = True
 
 folder_names = glob.glob("./rawdata/*/")
