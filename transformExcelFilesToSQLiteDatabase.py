@@ -12,6 +12,7 @@ pd.set_option('precision', 5)
 REPLACE = True
 
 folder_names = glob.glob("./rawdata/*/")
+print folder_names
 # note that we could directly import the column from an excel file
 # but it seems that LibreOffice makes xls files incompatible with pandas.
 # column_file = pd.ExcelFile("./Column Names.xls")
@@ -39,7 +40,7 @@ for ifolder, folder_name in enumerate(folder_names):
     metadata_table = pd.DataFrame(columns=metadata_columns)
     big_data_table = pd.DataFrame(columns=big_data_columns)
     print "-------------------------------------\nAccessing folder: " + folder_name
-    excel_files = glob.glob(folder_name + "\\*.xls")
+    excel_files = glob.glob(folder_name + "/*.xls")
     # excel_files = glob.glob(folder_name + "\\04-012 - COMPLETE.xls")
     for i, filepath in enumerate(excel_files):
         try:
@@ -48,7 +49,7 @@ for ifolder, folder_name in enumerate(folder_names):
             print "--\nTABLE NOT INCLUDED: Can't open file: " + filepath + ". It will not be included. Check if it is an encrypted/protected file.\n--"
             continue
         df = sheet.parse(0, header=None)
-        # print filepath
+        #print 'FILENAME: ', filepath
 
         # EXTRACT DATA FROM EXCEL SPREADSHEET:
         metadata_sheet = df.iloc[0:8, 0:2]
