@@ -1,0 +1,41 @@
+
+
+SELECT
+Reference,
+Meta_table.Sample as Sample,
+Meta_table.Institution as Institution,
+PR_table.RCT_Condition as Condition,
+
+CASE
+WHEN PR_table.RCT_Condition = 1 THEN PR_table.RCT_Synonym
+ELSE -99
+END
+Synonym_accept,
+
+CASE
+WHEN PR_table.RCT_Condition IN (2,4) THEN PR_table.RCT_Title
+ELSE -99
+END
+CL_title_accept,
+
+CASE
+WHEN PR_table.RCT_Condition IN (2,4) THEN PR_table.RCT_MS1
+ELSE -99
+END
+CL_MS1_accept,
+
+CASE
+WHEN PR_table.RCT_Condition IN (2,4) THEN PR_table.RCT_MS2
+ELSE -99
+END
+CL_MS2_accept,
+
+CASE
+WHEN PR_table.RCT_Condition IN (3,4) THEN PR_table.RCT_SDS
+ELSE -99
+END
+SDS_accept
+
+FROM
+PR_table
+LEFT JOIN Meta_table USING(Reference)
