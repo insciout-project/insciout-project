@@ -8,7 +8,7 @@ import glob, os
 # SQLStudio Editor which displays that View. Then re-open them and you will see the changes. That is due to a bug.
 # REPLACE is used when you want to replace/update existing views.
 
-REPLACE = False
+REPLACE = True
 folder_names = glob.glob("./analyses/*/")
 conn = sqlite3.connect("./database/InSciOut.sqlite3")
 cursor = conn.cursor()
