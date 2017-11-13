@@ -9,7 +9,7 @@ import glob, os
 # REPLACE is used when you want to replace/update existing views.
 
 REPLACE = False
-folder_names = glob.glob("./analyses/*/")
+folder_names = glob.glob("./database/ViewQueries")
 conn = sqlite3.connect("./database/InSciOut.sqlite3")
 cursor = conn.cursor()
 

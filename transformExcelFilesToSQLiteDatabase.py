@@ -120,7 +120,7 @@ for ifolder, folder_name in enumerate(folder_names):
     for category in categories:
         utils.upsert_to_db(big_data_table.ix[big_data_table.Source_Category == category,:],
                      category+"_table", conn, replace=REPLACE,
-                     dup_cols= ['Reference'] if category == 'PR' else ['Reference', 'Source'])
+                     dup_cols= ['Reference', 'Source'])
     print "Folder " + folder_name + " added successfully! \n\n"
 
     duplicated = metadata_table.duplicated(subset='Reference', keep='first')
