@@ -8,7 +8,7 @@ pd.set_option('precision', 5)
 # do we update or replace the current tables?
 # True will replace the existing table if you try to add a table with the same name
 # False will append the new entries to the existing table if you try to add a table with the same name
-# If you want to reset the database (replace the database), delete the current database or change its name (to back it up). 
+# If you want to reset the database (replace the database), delete the current database or change its name (to back it up).
 REPLACE = True
 
 folder_names = glob.glob("./rawdata/*/")
@@ -120,7 +120,7 @@ for ifolder, folder_name in enumerate(folder_names):
     for category in categories:
         utils.upsert_to_db(big_data_table.ix[big_data_table.Source_Category == category,:],
                      category+"_table", conn, replace=REPLACE,
-                     dup_cols= ['Reference'] if category == 'PR' else ['Reference', 'Source'])
+                     dup_cols= ['Reference', 'Source'])
     print "Folder " + folder_name + " added successfully! \n\n"
 
     duplicated = metadata_table.duplicated(subset='Reference', keep='first')

@@ -7,3 +7,4 @@ analyses/test.html
 *.pyc
 documentation/tutorials/.Rhistory
 *.Rhistory
+*.csv

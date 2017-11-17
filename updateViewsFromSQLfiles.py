@@ -9,7 +9,7 @@ import glob, os
 # REPLACE is used when you want to replace/update existing views.
 
 REPLACE = True
-folder_names = glob.glob("./analyses/*/")
+folder_names = glob.glob("./database/ViewQueries")
 conn = sqlite3.connect("./database/InSciOut.sqlite3")
 cursor = conn.cursor()
 
@@ -17,14 +17,16 @@ for folder_name in folder_names:
     print "Accessing folder: " + folder_name
     sql_paths = glob.glob(folder_name + "/*.sql")
     for sql_path in sql_paths:
+        print sql_path
         view_name = os.path.splitext(os.path.basename(sql_path))[0].replace(' ', '_')
         with open(sql_path, 'r') as sql_file:
             sql_query = sql_file.read().replace('\n', '\n')
         view_create = "CREATE VIEW %s AS " % (view_name) + sql_query
         # we could use CREATE VIEW IF NOT EXISTS %s AS, but then we won't be able to say if it happens.
         tb_exists = "SELECT name FROM sqlite_master WHERE type='{}' AND name='{}'".format('view', view_name)
-        if not cursor.execute(tb_exists).fetchone() or REPLACE:
-            if REPLACE:
+        tb_exists = cursor.execute(tb_exists).fetchone()
+        if not tb_exists or REPLACE:
+            if REPLACE and tb_exists:
                 cursor.execute('DROP VIEW {};'.format(view_name))
             try:
                 cursor.execute(view_create)
