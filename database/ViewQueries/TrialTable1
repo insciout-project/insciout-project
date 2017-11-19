@@ -58,7 +58,7 @@ News_table
 SELECT
 Reference,
 Meta_table.Sample as Sample,
-PR_table.RCT_Condition as Condition,
+PRDraft_table.RCT_Condition as Condition,
 News_table.Source as News_Source,
 JABody_table.Design_Actual as Study_Design,
 JAcategory.Study_Design_Category as Study_Design_Category,
@@ -85,14 +85,6 @@ NewsMS.News_MSCAcode,
 -- I CANT GET THIS TO WORK - IT WONT PULL IN THE NEWSMS TABLE FOR SOME REASON
 -- IT JUST COMES UP WITH NULL ALL THE TIME!!!
 
-CASE
-WHEN NewsMS.News_MSCAcode = 0 THEN -99
-WHEN NewsMS.News_MSCAcode = 2 THEN 100
-
-END
-News_MSCAExagg,
-
-
 --CASE
 --WHEN News_MSCAcode IN (0,1,-9,-99) THEN -99
 --WHEN Study_Design_Category = 3 THEN -99
@@ -113,7 +105,7 @@ News_table.SDI_Cause as News_Cause
 FROM
 News_table
 LEFT JOIN Meta_table USING(Reference)
-LEFT JOIN PR_table USING(Reference)
+LEFT JOIN PRDraft_table USING(Reference)
 LEFT JOIN JABody_table USING(Reference)
 LEFT JOIN JAcategory USING(Reference)
 LEFT JOIN NewsHeadline USING(Reference,Source)
