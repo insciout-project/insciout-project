@@ -50,6 +50,7 @@ News_table
 SELECT
 Reference,
 Meta_table.Sample as Sample,
+Meta_table.Year as Year,
 Meta_table.Institution as Institution,
 
 
