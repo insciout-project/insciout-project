@@ -61,7 +61,7 @@ for ifolder, folder_name in enumerate(folder_names):
             metadata_table.loc[i, 'Year'] = int("20" + metadata_table.loc[i, 'Reference'].split('-')[1])  # take 15 in 03-15-001
         metadata_table.loc[i, 'Reference'] = '-'.join([metadata_table.loc[i, 'Sample'], metadata_table.loc[i, 'Reference']])
 
-        data_table = df.iloc[6:55, 3: 48]
+        data_table = df.iloc[6:55, 3:]
         data_table = data_table.transpose()
         data_table.insert(0, data_columns[0], 'News') # insert the column Source_Category
         data_table[data_columns[0]].iloc[0:2] = 'PR'
