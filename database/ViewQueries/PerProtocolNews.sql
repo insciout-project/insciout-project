@@ -5,6 +5,10 @@ SELECT
 Reference,
 JABody_table.Design_Actual,
 -- add the correlational vs exp category
+-- 1 = correlational
+-- 2 = experimental
+-- 3 = other
+
 CASE
 WHEN JABody_table.Design_Actual IN (1,2,6) THEN 1
 WHEN JABody_table.Design_Actual IN (4,7,9) THEN 2
@@ -50,35 +54,14 @@ News_table
 SELECT
 Reference,
 Meta_table.Sample as Sample,
-Meta_table.Year as Year,
 Meta_table.Institution as Institution,
 
 
 -- NEED TO ADD INSTITUTION NAMES HERE
 CASE
---WHEN Institution = 1 THEN "Birmingham"
---WHEN Institution = 2 THEN "Bristol"
---WHEN Institution = 3 THEN "Cambridge"
 WHEN Institution = 4 THEN "Cardiff"
---WHEN Institution = 5 THEN "Durham"
---WHEN Institution = 6 THEN "Edinburgh"
---WHEN Institution = 7 THEN "Exeter"
---WHEN Institution = 8 THEN "Glasgow"
---WHEN Institution = 9 THEN "Imperial"
---WHEN Institution = 10 THEN "Kings"
 WHEN Institution = 11 THEN "Leeds"
---WHEN Institution = 13 THEN "LSE"
---WHEN Institution = 14 THEN "Manchester"
---WHEN Institution = 15 THEN "Newcastle"
---WHEN Institution = 16 THEN "Nottingham"
---WHEN Institution = 17 THEN "Oxford"
---WHEN Institution = 18 THEN "QMUL"
---WHEN Institution = 19 THEN "Belfast"
---WHEN Institution = 20 THEN "Sheffield"
---WHEN Institution = 21 THEN "Southampton"
 WHEN Institution = 22 THEN "UCL"
---WHEN Institution = 23 THEN "Warwick"
---WHEN Institution = 24 THEN "York"
 WHEN Institution = 25 THEN "BMJ"
 WHEN Institution = 26 THEN "Biomed"
 WHEN Institution = 27 THEN "MRC"
@@ -89,9 +72,8 @@ END
 Institution_Name,
 
 
-
 PRDraft_table.RCT_Condition as Condition,
-News_table.Source as News_Source,
+News_table.Source as News_Source
 JABody_table.Design_Actual as Study_Design,
 JAcategory.Study_Design_Category as Study_Design_Category,
 NewsHeadline.News_HCAcode as News_HCAcode,
@@ -127,16 +109,23 @@ News_MSCAExagg,
 --Was there any info on study design
 News_table.SDI_filled as NewsSDI_Any,
 News_table.SDI_Design as News_SD,
-News_table.SDI_Cause as News_Cause
+News_table.SDI_Cause as News_Cause,
+
+--were the changes accepted or not?
+PRFinal_table.RCT_Synonym as Synonym_acceptance,
+PRFinal_table.RCT_Title as Title_acceptance,
+PRFinal_table.RCT_MS1 as MS1_acceptance,
+PRFinal_table.RCT_SDS as SDS_acceptance
 
 
 FROM
 News_table
 LEFT JOIN Meta_table USING(Reference)
 LEFT JOIN PRDraft_table USING(Reference)
+LEFT JOIN PRFinal_table USING(Reference)
 LEFT JOIN JABody_table USING(Reference)
 LEFT JOIN JAcategory USING(Reference)
 LEFT JOIN NewsHeadline USING(Reference,Source)
 LEFT JOIN NewsMS USING(Reference,Source)
 
-WHERE Institution IN (4,11,22,25,26,27,29,32,32)
+WHERE Reference like '%trial%'
