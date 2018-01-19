@@ -198,13 +198,44 @@ WHEN Study_Design_Category = 3 THEN -99
 WHEN News_MSCAcode IN (2,3,4) THEN 0
 WHEN News_MSCAcode IN (5,6) THEN 1
 END
-News_HStated,
+News_MSStated,
 
 
---Was there any info on study design
+--Was there any info on study design for the PR?
+PRFinal_table.SDI_filled as PRSDI_Any,
+PRFinal_table.SDI_Design as PR_SD,
+PRFinal_table.SDI_Cause as PR_Cause,
+
+--Was there any info on study design for the news?
 News_table.SDI_filled as NewsSDI_Any,
 News_table.SDI_Design as News_SD,
-News_table.SDI_Cause as News_Cause
+News_table.SDI_Cause as News_Cause,
+
+--want to collapse explicit/ implict for SD and PR_Cause
+CASE
+WHEN PRFinal_table.SDI_Design = 0 THEN 0
+WHEN PRFinal_table.SDI_Design > 0 THEN 2
+END
+PR_SD2,
+
+CASE
+WHEN PRFinal_table.SDI_Cause = 0 THEN 0
+WHEN PRFinal_table.SDI_Cause > 0 THEN 2
+END
+PR_Cause2,
+
+CASE
+WHEN News_table.SDI_Design = 0 THEN 0
+WHEN News_table.SDI_Design > 0 THEN 2
+END
+News_SD2,
+
+CASE
+WHEN News_table.SDI_Cause = 0 THEN 0
+WHEN News_table.SDI_Cause > 0 THEN 2
+END
+News_Cause2
+
 
 ----were the changes accepted or not?
 --PRFinal_table.RCT_Synonym as Synonym_acceptance,
