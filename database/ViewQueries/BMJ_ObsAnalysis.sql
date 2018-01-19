@@ -133,7 +133,7 @@ CASE
 WHEN PR_MSCAcode IN (0,1,-9,-99) THEN -99
 WHEN Study_Design_Category = 3 THEN -99
 WHEN Study_Design_Category = 1 AND PR_MSCAcode IN (2,3,4) THEN 0
-WHEN Study_Design_Category = 1 AND PR_MAcode IN (5,6) THEN 1
+WHEN Study_Design_Category = 1 AND PR_MSCAcode IN (5,6) THEN 1
 WHEN Study_Design_Category = 2 AND PR_MSCAcode IN (2,3,4) THEN -1
 WHEN Study_Design_Category = 2 AND PR_MSCAcode IN (5,6) THEN 0
 END
@@ -196,7 +196,7 @@ CASE
 WHEN News_MSCAcode IN (0,1,-9,-99) THEN -99
 WHEN Study_Design_Category = 3 THEN -99
 WHEN News_MSCAcode IN (2,3,4) THEN 0
-WHEN News_MSAcode IN (5,6) THEN 1
+WHEN News_MSCAcode IN (5,6) THEN 1
 END
 News_HStated,
 
