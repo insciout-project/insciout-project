@@ -1,61 +1,1 @@
-﻿,,PR_Title
-,,Original_Title
-,,Discipline
-,,SubDiscipline_1
-,,SubDiscipline_2
-,,Notes
-,,Coder
-,,Reference
-,,Sample
-,,Year
-,,Institution
-,,Source_Category
-,,Source
-,Available for Coding?,isFilled
-,Date,Date
-,Who is news article written by?,Author
-,What's the actual job title of the journalist?,Author_Title
-Press Release Characteristics,Expected Level of News Uptake,ELNU
-,Particular Desired Outcome,PODO
-,Joint Release,JointPR
-,Embargo Start Day,Embargo_SD
-,Embargo Time,Embargo_Time
-,Embargo Duration (in days),Embargo_Duration
-IV/DV,Main conclusion IV(s),IV
-,Main conclusions DV(s),DV
-,Are the IV and DV the same (between JA and PR and between JA and NA),IVDV_Same
-TITLE,Primary statement of relationship,Title_Rship
-Causation/Relationship about main IV and DV,Statement of Relationship Code,Title_Code
-MAIN STATEMENTS,Primary statement of relationship,MS_Rship
-Causation/Relationship about main IV and DV,Statement of Relationship Code,MS_Code
-,Are the IV and DV the same in the title and the main statements?,TMS_IVDV_Same
-Sample,ACTUAL SAMPLE,Sample_Actual
-,Who are the Main Conclusions About?,Sample_Conc
-,Sample Code,Sample_Code
-Study Design  info,Study Design,Design_Actual
-,Any information about study design?,SDI_filled
-,Study design stated?,SDI_Design
-,Mention whether cause and effect can be deduced?,SDI_Cause
-,If they mention that cause and effect cannot be deduced - do they state why?,SDI_Cause_Why
-,Study context mentioned,SDI_Context
-,Any indication of the strength/ weakness of a study?,SDI_Eval
-RCT only,Statement of study design,SDI_Statement
-,words to mention,SDI_Statement_WordsTM
-,included in a quote?,SDI_Statement_Quote
-Advice,Advice to Change Behaviour,Advice
-,Code,Advice_Code
-Other,Press offices' institution mentioned?,Institution_Mention
-,words before mention,Institution_WordsTM
-,body word count (exc. Title),Body_WordCount
-PR Manipulations,Experimental condition,RCT_Condition
-,Synonym change,RCT_Synonym
-,words to mention,RCT_Synonym_WordsTM
-,Causal phrasing change title,RCT_Title
-,words to mention,RCT_Title_WordsTM
-,Causal phrasing change main statements 1.,RCT_MS1
-,words to mention,RCT_MS1_WordsTM
-,Causal phrasing change main statements 2.,RCT_MS2
-,words to mention,RCT_MS2_WordsTM
-,Design statement inserted (text),RCT_SDS
-,included in a quote?,RCT_SDS_Quote
-,words to mention,RCT_SDS_WordsTM
+﻿Subsection,Description,Reference cell in coding sheet,Variable NameDescriptive Data,Press release title,B1,PR_Title,Journal article title,B2,Original_Title,Discipline 1,B3,Discipline,Discipline 2,B4,SubDiscipline_1,Discipline 3,B5,SubDiscipline_2,Notes,B6,Notes,Coder,B7,Coder,Unique ID for press release,B8,ReferenceSample Identifiers,Sample,,Sample,Year data collected,,Year,Institution of the press release ,,Institution,"Source: Press Release, Journal Article or News",,Source_CategoryNews - descriptive info,News source,Row 7 (Column H onwards),Source,Filter to indicate data entry,Row 8,isFilled,Date,Row 9,Date,Who is news article written by? (from article),Row 10 (Column H onwards),Author,"What's the actual job title of the journalist? (if required, from google search)",Row 11 (Column H onwards),Author_TitlePress Release Characteristics,Expected Level of News Uptake,D12,ELNU,Particular Desired Outcome,D13,PODO,Joint Release,D14,JointPR,Embargo Start Day,D15,Embargo_SD,Embargo Time,D16,Embargo_Time,Embargo Duration (in days),D17,Embargo_DurationIV/DV,Main conclusion IV(s),Row 18,IV,Main conclusions DV(s),Row 19,DV,Are the IV and DV the same (between JA and PR and between JA and NA)?,Row 20,IVDV_SameTITLE,Primary statement of relationship,Row 21,Title_Rship,Statement of Relationship Code (text),Row 22,Title_CodeMAIN STATEMENTS,Primary statement of relationship (code from 0-6),Row 23,MS_Rship,Statement of Relationship Code (text),Row 24,MS_Code,Primary statement of relationship (code from 0-6),Row 25,TMS_IVDV_SameSample,"Actual sample (e.g. human, non-human) from journal article",G26,Sample_Actual,Who are the main conclusions about?,Row 27,Sample_Conc,Sample code,Row 28,Sample_CodeStudy Design  info,Study design (from the journal article),G29,Design_Actual,Any information about study design? (yes or no),Row 30,SDI_filled,Study design stated?,Row 31,SDI_Design,Mention whether cause and effect can be deduced?,Row 32,SDI_Cause,If they mention that cause and effect cannot be deduced - do they state why?,Row 33,SDI_Cause_Why,Study context mentioned,Row 34,SDI_Context,Any indication of the strength/ weakness of a study?,Row 35,SDI_EvalRCT only,Statement of study design (text),Row 36,SDI_Statement,Words to mention,Row 37,SDI_Statement_WordsTM,Included in a quote?,Row 38,SDI_Statement_QuoteAdvice,Advice to change behaviour,Row 39,Advice,Advice code,Row 40,Advice_CodeOther,Press offices' institution mentioned?,Row 41,Institution_Mention,Words to mention,Row 42,Institution_WordsTM,Body word count (exc. Title),Row 43,Body_WordCountPR Manipulations,Experimental condition,D44,RCT_Condition,Synonym change,D45,RCT_Synonym,Words to mention,D46,RCT_Synonym_WordsTM,Causal phrasing change - title,D47,RCT_Title,Words to mention,D48,RCT_Title_WordsTM,Causal phrasing change - main statements 1,D49,RCT_MS1,Words to mention,D50,RCT_MS1_WordsTM,Causal phrasing change - main statements 2,D51,RCT_MS2,Words to mention,D52,RCT_MS2_WordsTM,Design statement inserted,D53,RCT_SDS,Included in a quote?,D54,RCT_SDS_Quote,Words to mention,D55,RCT_SDS_WordsTM
