@@ -1,0 +1,482 @@
+---
+title: "InSciOut Documentation"
+author: "Provided by the InSciOut Team"
+
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    toc_depth: 4
+theme: journal
+highlight: pygment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(knitr)
+library(dplyr)
+```
+
+
+
+``` {r include=FALSE}
+library(DBI)
+db <- dbConnect(RSQLite::SQLite(), dbname = "/Users/racheladams/insciout-project2/database/InSciOut.sqlite3")
+```
+
+![](img/logo1.png)  
+  
+              
+ \newline   \newline  
+    
+
+
+## Introduction  
+   
+This documentation details:  
+  
+1. The InSciOut database
+    i) How to access the database
+    ii) Contents of the database
+     * The PR table  
+     * The JA table  
+     * The News table  
+     * The Meta table  
+     * Inventory of the columns     
+2. How to view the database
+    i) Using SQLiteStudio
+     * Making a View 
+    ii) Using Atom
+    iii) Using RStudio
+3. How to extract data using SQLiteStudio
+    i) *whatever we are putting in here*
+
+## 1. The InSciOut database 
+  
+The InSciOut database is an open repository of data collected from our randomised controlled trial looking at the influence of press releases on news. For more information on the trial see: http://sites.cardiff.ac.uk/insciout/rct/
+
+The database is in .sqlite3 format and compiles the coding sheets for press releases (PR), journal articles (JA) and news stories. The raw coding sheets (.xls format) can also be accessed through the main repository in the 'rawdata' folder along with the final published press releases (folder: 'Trial Press releases') and news articles (folder: 'Trial News articles').
+  
+### i) How to access the database
+  
+The database can be downloaded from: https://github.com/insciout-project/insciout-project
+  
+### ii) Contents of the database
+  
+The database divides the data into four `Root Tables`:  
+  
+#### The PR table
+  
+Contains all the data from the Press Releases (across all excel coding spreadsheets and all samples). Note that the rows of the table correspond to one Press Release. Hence, the columns of the table correspond to the rows in the excel coding spreadsheets (i.e. the data has been transposed between the excel coding sheet and the table). 
+
+Here is a preview:  
+*note. This table is limited to 1 line of data. To see the full table remove the last line of code* `LIMIT 1`
+
+```{sql connection=db}
+SELECT * FROM PR_table
+WHERE Reference like '%trial%'
+LIMIT 1
+``` 
+
+#### The JA table  
+  
+Contains all the data from the Journal Articles (across all excel coding spreadsheets and all samples). Both the columns "Journal Article - Title and Abstract" and "Journal Article - Body" are contained.  
+  
+The JA table is divided into 2 `views`:
+
+1. the JATitle table
+: returns the rows of the JA_table that come from the Journal Article Abstrat and Title,
+2. the JABody table
+: returns the rows of the JA_table that come from the Journal Article's Body.
+
+A `view` is a virtual table that is generated from the actual table in the database. These virtual tables can be used just like actual tables.
+
+
+Here is a preview of the JA Title table:
+
+```{sql connection=db}
+SELECT * FROM JATitle_table
+WHERE Reference like '%trial%'
+LIMIT 1
+
+```
+
+Here is a preview of the JA Body table:
+```{sql connection=db}
+SELECT * FROM JABody_table
+WHERE Reference like '%trial%'
+LIMIT 1
+
+```
+
+
+
+#### The News table 
+
+Contains all the data from the News (across all excel spreadsheets and all samples). Note that only the news columns that have been filled are kept.  
+
+Here is a preview:  
+*note that there are several News with the same `Reference`*
+
+
+```{sql connection=db}
+SELECT * FROM News_table
+WHERE Reference like '%trial%'
+LIMIT 2
+
+```
+
+
+#### The Meta table 
+    
+Contains the meta information for the Press Releases and related Journal Articles and News (across all excel coding spreadsheets and all samples e.g. reference, discipline, coder ID, titles). 
+
+*note. every table contains a column* `Reference` *that contains the unique identifier number for each data row*. 
+  
+
+Here is a preview:
+
+```{sql connection=db}
+SELECT * FROM Meta_table
+WHERE Reference like '%trial%'
+LIMIT 1
+
+```
+
+
+#### Inventory of the Columns
+
+A full inventory of the columns can be found in html format [here](file:///Users/racheladams/insciout-project2/documentation/Inventory_of_the_Columns.html)  
+
+Or in .csv format on the main page of the repository [here](https://github.com/insciout-project/insciout-project/blob/master/Column%20Names.csv).
+
+  
+## 2. How to view the database 
+   
+### i) Using SQLiteStudio
+
+SQLiteStudio is a GUI to manage the database. It can be used to create new tables, new views, and to explore and query the data (see below).
+  
+*note. we have experienced a tendency for SQLiteStudio to crash which can result in lost code. To be safe, save changes regularly. Alternatively we recommend using* [Atom](https://atom.io/) *or* [RStudio](www.rstudio.com) *as an SQL editor while having SQLiteStudio open to check the content of the database. Once your SQL query is giving you the table you want (don't forget to save regularly as well), you can copy-paste the code to SQLiteStudio.*
+
+In SQLiteStudio, go to `Database` -> `Connect to Database` and select the database. 
+
+You can see the data by double clicking on the tables or views within the *Databases* window. Once open click on the *Data* tab to see the data.
+
+You can also use the editor to explore the database. Press `ALT` + `E` to open the SQL editor and press `F9` or the blue play symbol to run any SQL queries.  
+  
+The basic query follows a simple `SELECT` and `FROM` structure where you select all the columns that you want to include in your output table and then the tables that you need to collect the information from.
+For example, if you wanted to create a table of all the References, Press Release titles, Journal Article titles and their causal codes you would write the following code:  
+*note. This table is limited to 2 lines of data. To see the full table remove the last line of code* `LIMIT 2`
+
+
+```{sql connection=db, verbatim = T}
+--// Select all of the data we want in our table in the order that we want it to be presented
+SELECT
+
+Reference, -- we want the reference to identify each case (note the commas on all but the last item in the list)
+PR_table.Title_Rship as PR_title,-- we want the PR titles (note we have to rename this using AS. This is because the variable has the same name for both the PR and JA)
+PR_table.Title_Code as PR_title_Code, -- we want the causal code for the PR titles (again renamed)
+JATitle_table.Title_Rship as JA_title, -- we want the JA titles (again renamed)
+JATitle_table.Title_Code as JA_title_Code -- we want the causal code for the JA titles (again renamed)
+
+--// now list where we need to source the data from
+FROM
+PR_table  -- we use the PR table as a base table so that we have 1 row per press release
+LEFT JOIN JATitle_table USING(Reference) -- we JOIN the JATitle_table using the common unique ID reference
+LIMIT 2 --***REMOVE THIS LINE TO SEE THE FULL TABLE***
+```
+
+  
+### ii) Using Atom
+
+Atom is a modern text and code editor. It is very modular and it is easy to install a SQL plugin.
+
+
+In Atom, you need to install the following packages from the package menu:
+- quick-query
+- quick-query-sqlite
+
+Then, make a new file. Press `ALT` + `\` to open the database explorer. Click the "+" tab to open the database. Note that you'll need to select `SQLite` in the list `protocol`. Now, you are ready to write some SQL queries. Click the `Play` button to run your SQL query. You can also press `F5` to run the query.
+  
+### iii) Using RStudio
+
+RStudio is the most common IDE for R. Thankfully, it knows SQL too.
+
+
+In RStudio, the simplest way is to create an `RMarkdown` document. You will get an example document, remove what you don't need and then copy-paste the following:
+
+```
+{r}
+library(DBI)
+db <- dbConnect(RSQLite::SQLite(), dbname = "../database/InSciOut.sqlite3")
+```
+
+With ``` surrounding the block of code to form a **chunk of code** that can be run.
+
+The above chunk of code is in R, which is told by `{r}`. It creates a connection to the database, which we call `db`.
+
+Then you can make any query using this kind of chunk:
+
+``` {sql connection=db, verbatim = T}
+SELECT * FROM Meta_table
+LIMIT 1
+```
+With ``` surrounding the block of code.
+
+The above chunk of code is in SQL, which is told by `{sql}`.
+The `connection=db` uses `db` to connect R to the database. Each chunk code that follows starts with `{sql connection=db}` to tell R to use `db` for the SQL query I am writing.
+
+## 3. How to extract relevant data tables using SQL
+
+### **Making A View** 
+ 
+You can transform any SQL query that extracts a table from the database into a `View`.
+
+A `View` is:
+
+  - a virtual table defined by a SQL query
+  - accessible as a usual table,
+  - stored in the database
+  - not using much memory (that is just a SQL query).
+  - updated whenever the other tables/views get updated.
+  - easy to create with SQLiteStudio.
+  
+Next to each `View`, we recommend that you save the SQL query related to this view in a text file next to the database (e.g. `view001.sql` to make it recognizable) - use 'Save SQL to file' button or `Ctrl` + `s` and remember to use '.sql' as an extension. You should be saving your queries **regularly** anyway when writing them up. This will avoid losing your work in case of a software crash. And even better: it will avoid losing all the views in case of a database corruption.
+
+Optionally, you will also be able to export any `View` into a CSV file with the button 'export Results'.
+
+
+The simplest way to make a view is to use SQLiteStudio as it is a GUI. 
+
+  - Click on `Tools` then `Open SQL Editor` or press `ALT` + `E`. 
+  - Write the query to make the table you want, or copy-paste the query from Atom/Rstudio.
+  - Click on the 'Start/Play' button or press `F9` to run the query and check that you obtain what you want. 
+  - When you are done, click on 'Create View from Query' (this looks like a blue square with a yellow lightening bolt through it).
+  
+Your table should now appear as a new view in the database.
+
+### Example view - causal language
+
+Here we provide code to pull out the causal codes for each News artcle, for the headline and the main statement
+
+(This is an example of code used. We have not provided all of our scripts but please contact us if you require further assistance: insciout@cardiff.ac.uk)
+
+To create the data table we need to extract the following:   
+
+| Reference^1^ | Sample^2^ | Condition^3^ | News_source^4^ | Study_Design^5^ | Study_Design_Category^6^ | News_HCAcode^7^ | News_MSCAcode^8^| News_HStated^9^ | News_MSStated^10^ | 
+|------:|-----|-----|-----|-----|-----|-----|-----|-----|
+
+1. Reference:
+: The unique identifier for each Press Release
+2. Sample:
+: Indicates which sample the data came from (data is sourced from multiple projects)
+3. Condition:
+: The trial condition (1= control, 2 = causal claim alignment, 3 = causality statement/caveat, 4= causal claim alignment + causality statement)
+4. News_source:
+: The source of the news article
+5. Study_Design:
+: The code of the study design (for more information see full coding guidelines: https://figshare.com/articles/InSciOut/903704)
+6. Study_Design_Category:
+: Study design categorised as either observational or experimental (Observational codes: 1, 2, 3, 5 OR 6; Experimental codes:4, 7 OR 9)
+7. News_HCAcode:
+: News headline causal code (for more information see full coding guidelines: https://figshare.com/articles/InSciOut/903704)
+8. News_MSCAcode:
+: News main statement causal code
+9. News_HStated:
+: News headline coded as weakly or strongly causal   
+To answer this question we follow the recommendations from [Adams et al. 2017](https://www.ncbi.nlm.nih.gov/pubmed/27808530) where:   
+a) correlational statements, ambiguous statements and conditional cause statements (causal codes 2-4) are viewed as appropriate for observational designs 
+b) can cause and cause statements (causal codes 5 and 6) are viewed as appropriate for experimental designs  
+
+
+
+10. News_MSStated:
+: News main statement coded as weakly or strongly causal  
+
+The SQL code to extract this table, along with an example of the table, is presented below.  
+  
+*note. This table is limited to 4 rows of data. To see the full table remove the last line of code:* `LIMIT 4`
+
+``` {sql connection=db, verbatim = T}
+
+--// some variables require re-coding, twice. Where this is the case they cannot be recoded in the 
+--// main table but instead require their own temporary table at the beginning of the script
+--// this can be done using WITH
+
+
+-- first we need to categorise study design as either correlational or experimental
+-- 1 = correlational, 2 = experimental, 3 = other
+
+WITH
+JAcategory AS ( -- create a new table 'JAcategory'
+SELECT -- SELECT the variables we want (eg. Design_Actual) FROM the associated table (eg. JABody_table)
+Reference,
+JABody_table.Design_Actual,
+-- recode the Design_Actual variable into the new Study_Design_Category variable using CASE and WHEN
+CASE
+WHEN JABody_table.Design_Actual IN (1,2,6) THEN 1 -- The correlational categories are 1,2 and 6
+WHEN JABody_table.Design_Actual IN (4,7,9) THEN 2 -- The experimental categories are 4,7 and 9
+WHEN JABody_table.Design_Actual IN (0,3,5,8) THEN 3 -- Non-defined categories are 0,3,5 and 8
+WHEN JABody_table.Design_Actual IN (-9) THEN -99 -- -9 means the variable has not been coded
+END
+Study_Design_Category -- this is the name of the new variable that we will call later
+FROM
+JABody_table
+),
+
+-- now we need the news headline causal code
+-- we need to make sure that the IV and DV are the same between NA and JA
+-- where they're not the same code as -99
+-- where they are the same provide the News headline code (News_table.Title_Code)
+-- this creates the new variable News_HCAcode
+
+NewsHeadline AS ( -- create the new table NewsHeadline
+SELECT
+Reference,
+News_table.Source, -- we need the source and the reference because there are multiple news with the same reference
+News_table.IVDV_Same,
+
+CASE
+WHEN News_table.IVDV_Same = 0 THEN -99
+WHEN News_table.IVDV_Same = 1 THEN News_table.Title_Code
+END
+News_HCAcode
+FROM
+News_table
+),
+
+-- now do the same for the news main statement and create 'News_MSCAcode'
+
+NewsMS AS (
+SELECT
+Reference,
+News_table.Source,
+News_table.IVDV_Same,
+CASE
+WHEN News_table.IVDV_Same = 0 THEN -99
+WHEN News_table.IVDV_Same = 1 THEN News_table.MS_Code
+END
+News_MSCAcode
+FROM
+News_table
+)
+
+
+-- this is the main table
+-- select the data we want in the order that we want it
+
+SELECT
+Reference,
+Meta_table.Sample as Sample, --renamed using as, because PR/JA tables have the same variable name
+PRDraft_table.RCT_Condition as Condition,
+News_table.Source as News_Source,
+JABody_table.Design_Actual as Study_Design,
+JAcategory.Study_Design_Category as Study_Design_Category, -- here we start calling variables we have created above
+NewsHeadline.News_HCAcode as News_HCAcode,
+NewsMS.News_MSCAcode as News_MSCAcode,
+
+-- now we want to know whether the News was weakly or strongly causal?
+-- using Adams et al (2017) coding
+
+-- News headline
+CASE
+WHEN News_HCAcode IN (0,1,-9,-99) THEN -99 -- first we exclude statements of no cause / NA
+WHEN Study_Design_Category = 3 THEN -99 -- and exclude study designs in category 3 = other (as coded above)
+WHEN News_HCAcode IN (2,3,4) THEN 0 -- statement codes 2, 3, and 4 are considered weakly causal
+WHEN News_HCAcode IN (5,6) THEN 1 -- statement codes 5 and 6 are considered strongly causal
+END
+News_HStated,
+
+---- News main statement
+CASE
+WHEN News_MSCAcode IN (0,1,-9,-99) THEN -99
+WHEN Study_Design_Category = 3 THEN -99
+WHEN News_MSCAcode IN (2,3,4) THEN 0
+WHEN News_MSCAcode IN (5,6) THEN 1
+END
+News_MSStated -- note there is no comma for the last variable
+
+-- reference where we want to source the data from
+FROM
+News_table -- use the news table as a reference table i.e. one row per news article
+LEFT JOIN Meta_table USING(Reference)
+LEFT JOIN PRDraft_table USING(Reference)
+LEFT JOIN PRFinal_table USING(Reference)
+LEFT JOIN JABody_table USING(Reference)
+LEFT JOIN JAcategory USING(Reference)
+LEFT JOIN NewsHeadline USING(Reference,Source) -- note we need the Reference and Source for the news tables
+LEFT JOIN NewsMS USING(Reference,Source)
+
+WHERE Reference like '%trial%' -- we are only including trial data
+AND News_table.IVDV_Same = 1 -- only include cases where the IV and DV were the same between JA and News
+AND Study_Design_Category<3 -- only include observational and experimental studies
+
+-- to remove NA cases for headlines (coded -99) remove the '--' in the line below 
+--AND News_HStated IN (0,1) -- only include headlines that are weakly / strongly causal
+
+-- to remove NA cases for main statements (coded -99) remove the '--' in the line below
+--AND News_MSStated IN (0,1) -- only include main statements that are weakly / strongly causal
+
+LIMIT 4
+
+```
+
+
+
+
+### Example view - news uptake
+
+Here is an example of code and a preview to extract the news uptake and number of news articles for each PR.
+
+*> News_Uptake: * 
+  
+Did the PR receive news coverage (1 = yes, 0 = no). First we calculate the number of news articles in a temporary table (`NewsCount`) using `COUNT`. We then code whether or not there was uptake in the main table using `CASE`, `WHEN`, and `NOT NULL` (i.e. when count >0 then there was news uptake)  
+
+*> Total_News:    *
+  
+How many news articles did the PR receive? Calculated in the temporary table (`NewsCount`) using `COUNT` and then coded in the main table using `CASE` and `WHEN`  
+   
+    
+*note. This table is limited to 10 rows of data. To see the full table remove the last line of code:* `LIMIT 10`  
+  
+  
+``` {sql connection=db, verbatim = T}
+
+-- create the temporary table NewsCount
+WITH
+NewsCount AS 
+    (SELECT 
+    Reference, 
+    COUNT() as Count 
+    FROM News_table GROUP BY Reference -- counts the number according to the reference
+    )
+
+-- create the main table
+SELECT
+Reference,
+Meta_table.Sample,
+PRDraft_table.RCT_Condition as Condition,
+
+
+--- add news uptake / number of news
+CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN 1 ELSE 0
+  END 
+News_Uptake,
+  CASE
+    WHEN NewsCount.Count IS NOT NULL
+    THEN NewsCount.Count ELSE 0
+END 
+Total_News 
+
+FROM
+PRDraft_table
+LEFT JOIN Meta_table USING(reference)
+LEFT JOIN NewsCount USING(reference)
+
+WHERE Reference like '%trial%' -- we are only including trial data
+LIMIT 10
+```

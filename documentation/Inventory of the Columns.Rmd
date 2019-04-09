@@ -9,7 +9,7 @@ highlight: pygment
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 library(data.table)
 library(knitr)
 library(dplyr)
@@ -19,37 +19,39 @@ library(dplyr)
 
 ``` {r include=FALSE}
 library(DBI)
-db <- dbConnect(RSQLite::SQLite(), dbname = "C:/Users/Rachel/Google Drive/Insciout Project/The TRIAL/Information for Geoffrey/InSciOut Project/database/InSciOut.db")
+db <- dbConnect(RSQLite::SQLite(), dbname = "/Users/racheladams/insciout-project2/database/InSciOut.sqlite3")
 ```
 
 ![](img/logo1.png)  
   
+              
+ \newline   \newline  
     
-  
-    
-The Columns of the PR table, JA table and News table are exactly the same. They represent the rows of the excel coding spreadsheets; with some more columns, such as `Source_Category`. 
+The Columns of the PR table, JA table and News table are exactly the same. They represent the rows of the excel coding spreadsheets; with some additional columns, such as `Source_Category`. 
+
 
 The inventory is provided below detailing:
 
-| Section^1^ | Explanation^2^ | Location^3^ | Column Name^4^ |
+| Subsection^1^ | Description^2^ | Reference cell^3^ | Column Name^4^ |
 |:-----|-----|-----|-----|
 
 
-1. Section:
-: Section refers to the section of the excel Coding Sheet
-2. Explanation:
-: Most explanations are taken directly from the excel Coding Sheet
-3. Location:
-: Cell locations or rows from the excel Coding Sheet are included where possible
+1. Subsection:
+: Section refers to the section of the excel coding Sheet
+2. Description:
+: Most explanations are taken directly from the excel coding sheet
+3. Reference cell:
+: Cell locations or rows from the excel coding sheet are included where possible
 4. Column Name:
-: This is the name of the variable provided in the InSciOut Database
+: This is the name of the variable provided in the InSciOut database
 
-A csv copy of this table can also be found here: [*** to insert location***]
+A csv copy of this table can also be found on the main page of the repository.
 
 
 ```{r}
 columns <- read.csv("../Column Names.csv")
-names(columns) <- c("Section", "Explanation (coding sheet)", "Location (coding sheet)", "Column Name")
+
+names(columns) <- c("Subsection", "Description", "Reference cell (coding sheet)", "Column Name")
 
 kable(columns[0:dim(columns)[1],]) 
 ```

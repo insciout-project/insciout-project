@@ -18,11 +18,11 @@ library(knitr)
 library(dplyr)
 ```
 
-
+ 
 
 ``` {r include=FALSE}
 library(DBI)
-db <- dbConnect(RSQLite::SQLite(), dbname = "C:/Users/Rachel/Google Drive/Insciout Project/The TRIAL/Information for Geoffrey/InSciOut Project/database/InSciOut.db")
+db <- dbConnect(RSQLite::SQLite(), dbname = "/Users/racheladams/insciout-project2/database/InSciOut.sqlite3")
 ```
 
 ![](img/logo1.png)
@@ -55,11 +55,13 @@ This documentation details:
 
 ## 1. The InSciOut database 
   
-***[some general info here???]  ***
+The InSciOut database is an open repository of data collected from our randomised controlled trial looking at the influence of press releases on news. For more information on the trial see: http://sites.cardiff.ac.uk/insciout/rct/
+
+The database is in .sqlite3 format and compiles the coding sheets for press releases (PR), journal articles (JA) and news stories. The raw coding sheets (.xls format) can also be accessed through the main repository in the 'rawdata' folder along with the final published press releases (folder: 'Trial Press releases') and news articles (folder: 'Trial News articles').
   
 ### i) How to access the database
   
-[info on how to get hold of the database to go here -i.e. where we're going to host it] 
+The database can be downloaded from: https://github.com/insciout-project/insciout-project
   
 ### ii) Contents of the database
   
@@ -67,32 +69,34 @@ The database divides the data into four `Root Tables`:
   
 #### The PR table
   
-Contains all the data from the Press Releases. It is the concatenation of the content from E7 to E55 across all excel coding spreadsheets and all samples. Note that the rows of the table correspond to one Press Release. Hence, the columns of the table correspond to the rows in the excel coding spreadsheet (i.e. the data has been transposed between the excel coding sheet and the table). 
+Contains all the data from the Press Releases (across all excel coding spreadsheets and all samples). Note that the rows of the table correspond to one Press Release. Hence, the columns of the table correspond to the rows in the excel coding spreadsheets (i.e. the data has been transposed between the excel coding sheet and the table). 
 
 Here is a preview:  
-*note that we pass the `db` to Rmarkdown connection*
+
 
 ```{sql connection=db}
 SELECT * FROM PR_table
 LIMIT 1
+``` 
 
-```
+
 
 #### The JA table  
   
-Contains all the data from the Journal Articles. It is the concatenation of the content from [F:G, 7:55] across all excel coding spreadsheets and all samples. Hence, both the columns "Journal Article - Title and Abstract" and "Journal Article - Body" are contained.  
+Contains all the data from the Journal Articles (across all excel coding spreadsheets and all samples). Both the columns "Journal Article - Title and Abstract" and "Journal Article - Body" are contained.  
   
-The JA table is divided into 2 views:
+The JA table is divided into 2 `views`:
 
 1. the JATitle table
 : returns the rows of the JA_table that come from the Journal Article Abstrat and Title,
 2. the JABody table
 : returns the rows of the JA_table that come from the Journal Article's Body.
 
-A `view` as we will see below is a virtual table that is generated from the actual table in the database. These virtual tables can be used as if there are actual table.
+A `view` is a virtual table that is generated from the actual table in the database. These virtual tables can be used just like actual tables.
 
 
 Here is a preview of the JA Title table:
+<!--
 ```{sql connection=db}
 SELECT * FROM JATitle_table
 LIMIT 1
@@ -106,41 +110,44 @@ LIMIT 1
 
 ```
 
+-->
 
 #### The News table 
 
-Contains all the data from the News. It is the concatenation of the content from [H:AV, 7:55] across all excel spreadsheets and all samples. Note that only the news columns that have been filled are kept.  
+Contains all the data from the News (across all excel spreadsheets and all samples). Note that only the news columns that have been filled are kept.  
 
 Here is a preview:  
 *note that there are several News with the same `Reference`*
- 
+
+<!--
 ```{sql connection=db}
 SELECT * FROM News_table
 LIMIT 2
 
 ```
-  
+-->
+
 #### The Meta table 
     
-Contains the meta information for the Press Releases and related Journal Articles and News. It is the concatenation of the content from [A:B, 1:8] across all excel coding spreadsheets and all samples. 
+Contains the meta information for the Press Releases and related Journal Articles and News (across all excel coding spreadsheets and all samples e.g. reference, discipline, coder ID, titles). 
 
-*note. every table contains a column* `Reference` *that contains the reference number for each entry/row. This unique identifier is unique for every PR and should have the following nomenclature: *`[Sample]-[Institution]-[Year]-[Number]`
+*note. every table contains a column* `Reference` *that contains the unique identifier number for each data row*. 
   
-This division of the information into four tables will allow us to cross easily the information between Meta, PR, JA and News. To cross information between several tables is called a `MERGE` or `JOIN` operation, which is at the core of `SQL` and modern data manipulation libraries (R, Python, MATLAB). See below for how to implement this operation.
-  
+
 Here is a preview:
-  
+<!--
 ```{sql connection=db}
 SELECT * FROM Meta_table
 LIMIT 1
 
 ```
+-->
 
 #### Inventory of the Columns
 
-A full inventory of the columns can be found in html format [here](file:///C:/Users/Rachel/Documents/InSciOut/InSciOut-Project/documentation/tutorials/Inventory_of_the_Columns.html)  
+A full inventory of the columns can be found in html format [here](file:///Users/racheladams/insciout-project2/documentation/Inventory_of_the_Columns.html)  
   
-Or in csv format here: [*** to insert location***]
+Or in .csv format on the main page of the repository.
 
   
 ## 2. How to view the database 
@@ -156,8 +163,9 @@ In SQLiteStudio, go to `Database` -> `Connect to Database` and select the databa
 You can see the data by double clicking on the tables or views within the *Databases* window. Once open click on the *Data* tab to see the data.
 
 You can also use the editor to explore the database. Press `ALT` + `E` to open the SQL editor and press `F9` or the blue play symbol to run any SQL queries.  
+  
 The basic query follows a simple `SELECT` and `FROM` structure where you select all the columns that you want to include in your output table and then the tables that you need to collect the information from.
-For example, if you wanted to create a table of all the References, Press Release titles, Journal Article titles and their causal codes you would write the following code:
+For example, if you wanted to create a table of all the References, Press Release titles, Journal Article titles and their causal codes you would write the following code:  
 *note. This table is limited to 2 lines of data. To see the full table remove the last line of code* `LIMIT 2`
   
 
@@ -188,7 +196,7 @@ In Atom, you need to install the following packages from the package menu:
 - quick-query
 - quick-query-sqlite
 
-Then, make a new file. Press `ALT` + `\` to open the database explorer. Click the "+" tab to open the data base. Note that you'll need to select `SQLite` in the list `protocol`. Now, you are ready to write some SQL queries. Click the `Play` button to run your SQL query. You can also press `F5` to run the query.
+Then, make a new file. Press `ALT` + `\` to open the database explorer. Click the "+" tab to open the database. Note that you'll need to select `SQLite` in the list `protocol`. Now, you are ready to write some SQL queries. Click the `Play` button to run your SQL query. You can also press `F5` to run the query.
   
 ### iii) Using RStudio
 
