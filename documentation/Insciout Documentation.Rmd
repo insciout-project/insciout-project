@@ -147,7 +147,7 @@ LIMIT 1
 
 #### Inventory of the Columns
 
-A full inventory of the columns can be found in html format [here](file:///Users/racheladams/insciout-project2/documentation/Inventory_of_the_Columns.html)  
+A full inventory of the columns can be found in html format [here](Inventory_of_the_Columns.html)  
 
 Or in .csv format on the main page of the repository [here](https://github.com/insciout-project/insciout-project/blob/master/Column%20Names.csv).
 
@@ -160,7 +160,7 @@ Or in .csv format on the main page of the repository [here](https://github.com/i
   
 *note. we have experienced a tendency for SQLiteStudio to crash which can result in lost code. To be safe, save changes regularly. Alternatively we recommend using* [Atom](https://atom.io/) *or* [RStudio](www.rstudio.com) *as an SQL editor while having SQLiteStudio open to check the content of the database. Once your SQL query is giving you the table you want (don't forget to save regularly as well), you can copy-paste the code to SQLiteStudio.*
 
-In SQLiteStudio, go to `Database` -> `Connect to Database` and select the database. 
+In SQLiteStudio, go to `Database` -> `Add a database` and select the database (navigate to your chosen folder: .../insciout-project-master/database/InSciOut.sqlite3). 
 
 You can see the data by double clicking on the tables or views within the *Databases* window. Once open click on the *Data* tab to see the data.
 
@@ -230,7 +230,7 @@ The `connection=db` uses `db` to connect R to the database. Each chunk code that
 
 ## 3. How to extract relevant data tables using SQL
 
-### **Making A View** 
+### i) Making A View
  
 You can transform any SQL query that extracts a table from the database into a `View`.
 
@@ -257,7 +257,7 @@ The simplest way to make a view is to use SQLiteStudio as it is a GUI.
   
 Your table should now appear as a new view in the database.
 
-### Example view - causal language
+### ii) Example view - causal language
 
 Here we provide code to pull out the causal codes for each News artcle, for the headline and the main statement
 
@@ -426,7 +426,7 @@ LIMIT 4
 
 
 
-### Example view - news uptake
+### iii) Example view - news uptake
 
 Here is an example of code and a preview to extract the news uptake and number of news articles for each PR.
 
