@@ -22,7 +22,7 @@ library(dplyr)
 
 ``` {r include=FALSE}
 library(DBI)
-db <- dbConnect(RSQLite::SQLite(), dbname = "/Users/racheladams/insciout-project2/database/InSciOut.sqlite3")
+db <- dbConnect(RSQLite::SQLite(), dbname = "../database/InSciOut.sqlite3")
 ```
 
 ![](img/logo1.png)  
