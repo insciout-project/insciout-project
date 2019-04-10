@@ -149,7 +149,7 @@ LIMIT 1
 
 A full inventory of the columns can be found in html format [here](Inventory_of_the_Columns.html)  
 
-Or in .csv format on the main page of the repository [here](https://github.com/insciout-project/insciout-project/blob/master/Column%20Names.csv).
+Or in .csv and .xlsx format on the main page of the repository [here](https://github.com/insciout-project/insciout-project/blob/master/Column%20Names.csv). You can navigate to the file through your folders e.g. insciout-project-master/Column Names.csv
 
   
 ## 2. How to view the database 
@@ -158,7 +158,7 @@ Or in .csv format on the main page of the repository [here](https://github.com/i
 
 [SQLiteStudio](https://sqlitestudio.pl/index.rvt) is a GUI to manage the database. It can be used to create new tables, new views, and to explore and query the data (see below).
   
-*note. we have experienced a tendency for SQLiteStudio to crash which can result in lost code. To be safe, save changes regularly. Alternatively we recommend using* [Atom](https://atom.io/) *or* [RStudio](www.rstudio.com) *as an SQL editor while having SQLiteStudio open to check the content of the database. Once your SQL query is giving you the table you want (don't forget to save regularly as well), you can copy-paste the code to SQLiteStudio.*
+*note. we have experienced a tendency for SQLiteStudio to crash which can result in lost code. To be safe, save changes regularly. Alternatively we recommend using* [Atom](https://atom.io/) *or* [RStudio](https://www.rstudio.com/) *as an SQL editor while having SQLiteStudio open to check the content of the database. Once your SQL query is giving you the table you want (don't forget to save regularly as well), you can copy-paste the code to SQLiteStudio.*
 
 In SQLiteStudio, go to `Database` -> `Add a database` and select the database (navigate to your chosen folder: .../insciout-project-master/database/InSciOut.sqlite3). 
 
